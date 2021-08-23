@@ -33,11 +33,30 @@ class TimelineView: NSView {
         ctx.setStrokeColor(NSColor.rulerColor.cgColor)
         ctx.strokePath()
         
+        // Asset label attributed
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineBreakMode = .byTruncatingTail
+        
+        let attributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: NSColor.white,
+            .font: NSFont.systemFont(ofSize: CGFloat(10)),
+            .paragraphStyle: paragraphStyle
+        ]
+        
+        let oneSecWidth = bounds.width / CGFloat(timeline.visibleDur)
+        
         // Draw tracks
         var y: CGFloat = .zero
         for track in timeline.tracks {
             // Draw waveform
             drawWaveform(asset: track.asset, timeline: timeline, origin: CGPoint(x: .zero, y: y), color: NSColor.timelineWaveColor.cgColor, to: ctx)
+            
+            // Draw asset name
+            let frame = CGRect(x: CGFloat(2) + CGFloat(track.asset.startTime - timeline.visibleTimeRange.lowerBound) * oneSecWidth,
+                               y: CGFloat(2) + y,
+                               width: CGFloat(track.asset.duration) * oneSecWidth - CGFloat(4),
+                               height: timeline.trackHeight)
+            NSString(string: track.asset.name).draw(in: frame, withAttributes: attributes)
             
             // Draw horizontal separator
             ctx.move(to: CGPoint(x: dirtyRect.minX,
@@ -47,6 +66,18 @@ class TimelineView: NSView {
             ctx.setStrokeColor(NSColor.windowBackgroundColor.cgColor)
             ctx.setLineWidth(CGFloat(2))
             ctx.strokePath()
+            
+            // Draw asset selection
+            if track.asset.isSelected {
+                let frame = CGRect(x: CGFloat(track.asset.startTime - timeline.visibleTimeRange.lowerBound) * oneSecWidth,
+                                   y: y,
+                                   width: CGFloat(track.asset.duration) * oneSecWidth,
+                                   height: timeline.trackHeight)
+                    .insetBy(dx: CGFloat(1), dy: CGFloat(1))
+                ctx.setStrokeColor(NSColor.timelineWaveColor.cgColor)
+                ctx.setLineWidth(CGFloat(2))
+                ctx.stroke(frame)
+            }
             
             y += timeline.trackHeight
         }
@@ -98,13 +129,13 @@ class TimelineView: NSView {
             let power = asset.power(at: time)
             
             let heigth = max(CGFloat(1),
-                             CGFloat(power) * (frame.height/2))
+                             CGFloat(power) * (frame.height/2 - 10))
             
             ctx.move(to: CGPoint(x: x,
-                                 y: frame.midY + heigth))
+                                 y: frame.midY + 5 + heigth))
             
             ctx.addLine(to: CGPoint(x: x,
-                                    y: frame.midY - heigth))
+                                    y: frame.midY + 5 - heigth))
             
             x += stepInPx
         }
