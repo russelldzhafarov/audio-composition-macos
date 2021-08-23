@@ -7,14 +7,24 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		90799D1326D2898F009B327E /* AudioExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90799D1226D2898F009B327E /* AudioExporter.swift */; };
 		907E2CB126D11309007EBFD1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 907E2CB026D11309007EBFD1 /* AppDelegate.swift */; };
 		907E2CB326D11309007EBFD1 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 907E2CB226D11309007EBFD1 /* ViewController.swift */; };
 		907E2CB526D11309007EBFD1 /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 907E2CB426D11309007EBFD1 /* Document.swift */; };
 		907E2CB726D1130E007EBFD1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 907E2CB626D1130E007EBFD1 /* Assets.xcassets */; };
 		907E2CBA26D1130E007EBFD1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 907E2CB826D1130E007EBFD1 /* Main.storyboard */; };
+		907E2CC526D11449007EBFD1 /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 907E2CC426D11449007EBFD1 /* TimelineView.swift */; };
+		907E2CC826D11456007EBFD1 /* RulerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 907E2CC726D11456007EBFD1 /* RulerView.swift */; };
+		907E2CCB26D11463007EBFD1 /* OverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 907E2CCA26D11463007EBFD1 /* OverlayView.swift */; };
+		907E2CCE26D114D2007EBFD1 /* Timeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 907E2CCD26D114D2007EBFD1 /* Timeline.swift */; };
+		907E2CD226D11732007EBFD1 /* WindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 907E2CD126D11732007EBFD1 /* WindowController.swift */; };
+		907E2CD726D24FC2007EBFD1 /* AVAudioPCMBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 907E2CD626D24FC2007EBFD1 /* AVAudioPCMBuffer.swift */; };
+		907E2CDA26D25159007EBFD1 /* AudioTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 907E2CD926D25159007EBFD1 /* AudioTrack.swift */; };
+		907E2CDD26D251DD007EBFD1 /* AudioAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 907E2CDC26D251DD007EBFD1 /* AudioAsset.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		90799D1226D2898F009B327E /* AudioExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioExporter.swift; sourceTree = "<group>"; };
 		907E2CAD26D11309007EBFD1 /* audio-composition-macos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "audio-composition-macos.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		907E2CB026D11309007EBFD1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		907E2CB226D11309007EBFD1 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -23,6 +33,14 @@
 		907E2CB926D1130E007EBFD1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		907E2CBB26D1130E007EBFD1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		907E2CBC26D1130E007EBFD1 /* audio_composition_macos.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = audio_composition_macos.entitlements; sourceTree = "<group>"; };
+		907E2CC426D11449007EBFD1 /* TimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
+		907E2CC726D11456007EBFD1 /* RulerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RulerView.swift; sourceTree = "<group>"; };
+		907E2CCA26D11463007EBFD1 /* OverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayView.swift; sourceTree = "<group>"; };
+		907E2CCD26D114D2007EBFD1 /* Timeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timeline.swift; sourceTree = "<group>"; };
+		907E2CD126D11732007EBFD1 /* WindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowController.swift; sourceTree = "<group>"; };
+		907E2CD626D24FC2007EBFD1 /* AVAudioPCMBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVAudioPCMBuffer.swift; sourceTree = "<group>"; };
+		907E2CD926D25159007EBFD1 /* AudioTrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioTrack.swift; sourceTree = "<group>"; };
+		907E2CDC26D251DD007EBFD1 /* AudioAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioAsset.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,7 +75,16 @@
 			children = (
 				907E2CB026D11309007EBFD1 /* AppDelegate.swift */,
 				907E2CB226D11309007EBFD1 /* ViewController.swift */,
+				907E2CD126D11732007EBFD1 /* WindowController.swift */,
 				907E2CB426D11309007EBFD1 /* Document.swift */,
+				907E2CCD26D114D2007EBFD1 /* Timeline.swift */,
+				907E2CD926D25159007EBFD1 /* AudioTrack.swift */,
+				907E2CDC26D251DD007EBFD1 /* AudioAsset.swift */,
+				907E2CC426D11449007EBFD1 /* TimelineView.swift */,
+				907E2CC726D11456007EBFD1 /* RulerView.swift */,
+				907E2CCA26D11463007EBFD1 /* OverlayView.swift */,
+				907E2CD626D24FC2007EBFD1 /* AVAudioPCMBuffer.swift */,
+				90799D1226D2898F009B327E /* AudioExporter.swift */,
 				907E2CB626D1130E007EBFD1 /* Assets.xcassets */,
 				907E2CB826D1130E007EBFD1 /* Main.storyboard */,
 				907E2CBB26D1130E007EBFD1 /* Info.plist */,
@@ -136,8 +163,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				907E2CB326D11309007EBFD1 /* ViewController.swift in Sources */,
+				907E2CCE26D114D2007EBFD1 /* Timeline.swift in Sources */,
+				907E2CC826D11456007EBFD1 /* RulerView.swift in Sources */,
+				907E2CD726D24FC2007EBFD1 /* AVAudioPCMBuffer.swift in Sources */,
 				907E2CB126D11309007EBFD1 /* AppDelegate.swift in Sources */,
+				907E2CCB26D11463007EBFD1 /* OverlayView.swift in Sources */,
+				907E2CDA26D25159007EBFD1 /* AudioTrack.swift in Sources */,
+				907E2CD226D11732007EBFD1 /* WindowController.swift in Sources */,
+				907E2CDD26D251DD007EBFD1 /* AudioAsset.swift in Sources */,
+				90799D1326D2898F009B327E /* AudioExporter.swift in Sources */,
 				907E2CB526D11309007EBFD1 /* Document.swift in Sources */,
+				907E2CC526D11449007EBFD1 /* TimelineView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
