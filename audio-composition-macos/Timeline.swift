@@ -10,7 +10,7 @@ import Combine
 
 class Timeline: ObservableObject {
     
-    let trackHeight = CGFloat(50)
+    let trackHeight = CGFloat(60)
     
     var acceptableUTITypes: [String] {
         ["public.mp3", "com.apple.m4a-audio", "com.microsoft.waveform-audio"]
@@ -26,6 +26,7 @@ class Timeline: ObservableObject {
     }
     
     private let audioEngine = AVAudioEngine()
+    private let audioExporter = AudioExporter()
     
     @Published var tracks: [AudioTrack] = []
     @Published var visibleTimeRange: Range<TimeInterval> = 0.0 ..< 60.0
@@ -35,6 +36,7 @@ class Timeline: ObservableObject {
     @Published var state: State = .ready
     @Published var playerState: PlayerState = .stopped
     @Published var error: Error?
+    @Published var needsDisplay = false
     
     var visibleDur: TimeInterval {
         visibleTimeRange.upperBound - visibleTimeRange.lowerBound
@@ -120,7 +122,7 @@ class Timeline: ObservableObject {
     }
     func forwardEnd() {
         selectedTimeRange = nil
-        seek(to: duration)
+        seek(to: duration - TimeInterval(60))
     }
     func backward() {
         selectedTimeRange = nil
@@ -139,14 +141,11 @@ class Timeline: ObservableObject {
                 self.state = .ready
             }
             do {
-                guard let buffer = try AVAudioPCMBuffer(url: url) else {
+                guard let asset = try AudioAsset(url: url, startTime: .zero) else {
                     throw AppError.read
                 }
-                
-                let amps = buffer.compressed()
-                
                 self.tracks.append(AudioTrack(name: "Track",
-                                              asset: AudioAsset(buffer: buffer, amps: amps)))
+                                              asset: asset))
                 
             } catch {
                 self.error = error
@@ -154,7 +153,16 @@ class Timeline: ObservableObject {
         }
     }
     
-    func export() {
+    func export(to url: URL) {
+        let format: AVAudioFormat = AVAudioFormat()
+        let settings: [String: Any] = [:]
+        let fileLength: AVAudioFramePosition = 0
         
+        audioExporter.export(timeline: self,
+                             engine: audioEngine,
+                             format: format,
+                             settings: settings,
+                             fileLength: fileLength,
+                             outputURL: url)
     }
 }
