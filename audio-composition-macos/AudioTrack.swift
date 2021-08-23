@@ -56,31 +56,22 @@ class AudioTrack: Identifiable, Codable {
     
     let player = AVAudioPlayerNode()
     
-    var currentFrame: AVAudioFramePosition {
-        guard let lastRenderTime = player.lastRenderTime,
-              let playerTime = player.playerTime(forNodeTime: lastRenderTime)
-        else {
-            return 0
-        }
-        return playerTime.sampleTime
-    }
-    
     public func schedule(at currentTime: TimeInterval) {
-        if currentTime > (asset.startTime.seconds + asset.duration) {
+        if currentTime > (asset.startTime + asset.duration) {
             return
         }
         
         let time = AVAudioTime(
-            sampleTime: AVAudioFramePosition((asset.startTime.seconds - currentTime) * asset.buffer.format.sampleRate),
+            sampleTime: AVAudioFramePosition((asset.startTime - currentTime) * asset.buffer.format.sampleRate),
             atRate: asset.buffer.format.sampleRate)
         
-        if currentTime <= asset.startTime.seconds {
+        if currentTime <= asset.startTime {
             player.scheduleBuffer(asset.buffer, at: time)
         }
         
-        if currentTime > asset.startTime.seconds && currentTime < (asset.startTime.seconds + asset.duration) {
+        if currentTime > asset.startTime && currentTime < (asset.startTime + asset.duration) {
             
-            let from = currentTime - asset.startTime.seconds
+            let from = currentTime - asset.startTime
             let to = Double(asset.buffer.frameCapacity) / asset.buffer.format.sampleRate
             
             if let segment = asset.buffer.extract(from: from, to: to) {
