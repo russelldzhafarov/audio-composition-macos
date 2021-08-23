@@ -7,25 +7,41 @@
 
 import AVFoundation
 
-class TimelineItem: Identifiable {
-    let id = UUID()
-    var timeRange: CMTimeRange
-    var startTime: CMTime
+class AudioAsset: Identifiable, Codable {
     
-    init() {
-        self.timeRange = .invalid
-        self.startTime = .zero
+    enum CodingKeys: String, CodingKey {
+        case url
+        case startTime
     }
-}
-
-class AudioAsset: TimelineItem {
+    
+    let id = UUID()
+    
+    var url: URL
+    var startTime: TimeInterval
     let buffer: AVAudioPCMBuffer
     let amps: [Float]
     
-    init(buffer: AVAudioPCMBuffer, amps: [Float]) {
+    var isSelected = false
+    
+    var name: String {
+        url.lastPathComponent
+    }
+    
+    init?(url: URL, startTime: TimeInterval) throws {
+        self.url = url
+        self.startTime = startTime
+        guard let buffer = try AVAudioPCMBuffer(url: url) else { return nil }
         self.buffer = buffer
-        self.amps = amps
-        super.init()
+        self.amps = buffer.compressed()
+    }
+    
+    required init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        url = try values.decode(URL.self, forKey: .url)
+        startTime = try values.decode(Double.self, forKey: .startTime)
+        
+        self.buffer = try AVAudioPCMBuffer(url: url)!
+        self.amps = buffer.compressed()
     }
     
     var format: AVAudioFormat {
