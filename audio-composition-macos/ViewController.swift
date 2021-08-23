@@ -10,8 +10,23 @@ import Combine
 
 class ViewController: NSViewController {
     
+    let savePanel: NSSavePanel = {
+        let panel = NSSavePanel()
+        panel.nameFieldStringValue = "Untitled.m4a"
+        return panel
+    }()
+    
     @IBOutlet weak var playButton: NSButton!
-    @IBOutlet weak var exportButton: NSButton!
+    @IBOutlet weak var exportButton: NSButton! {
+        didSet {
+            let layer = CALayer()
+            layer.borderWidth = CGFloat(1)
+            layer.borderColor = NSColor.rulerColor.cgColor
+            layer.cornerRadius = exportButton.bounds.height / CGFloat(2)
+            exportButton.wantsLayer = true
+            exportButton.layer = layer
+        }
+    }
     @IBOutlet weak var overlayView: OverlayView!
     @IBOutlet weak var timelineView: TimelineView!
     @IBOutlet weak var rulerView: RulerView!
@@ -33,6 +48,15 @@ class ViewController: NSViewController {
     override var representedObject: Any? {
         didSet {
             guard let timeline = representedObject as? Timeline else { return }
+            
+            timeline.$needsDisplay
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] newValue in
+                    guard newValue else { return }
+                    self?.timelineView.needsDisplay = true
+                    timeline.needsDisplay = false
+                }
+                .store(in: &cancellables)
             
             timeline.$tracks
                 .receive(on: DispatchQueue.main)
@@ -126,8 +150,13 @@ class ViewController: NSViewController {
         timeline.forwardEnd()
     }
     @IBAction func actionExport(_ sender: Any) {
-        guard let timeline = representedObject as? Timeline else { return }
-        timeline.export()
+        savePanel.begin { [weak self] response in
+            guard response == .OK,
+                  let url = self?.savePanel.url,
+                  let timeline = self?.representedObject as? Timeline else { return }
+            
+            timeline.export(to: url)
+        }
     }
 }
 
