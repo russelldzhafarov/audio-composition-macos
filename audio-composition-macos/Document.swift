@@ -2,13 +2,15 @@
 //  Document.swift
 //  audio-composition-macos
 //
-//  Created by blessed on 21.08.2021.
+//  Created by russell.dzhafarov@gmail.com on 21.08.2021.
 //
 
 import Cocoa
 
 class Document: NSDocument {
-
+    
+    let timeline = Timeline()
+    
     override init() {
         super.init()
         // Add your subclass-specific initialization here.
@@ -23,21 +25,16 @@ class Document: NSDocument {
         let storyboard = NSStoryboard(name: NSStoryboard.Name("Main"), bundle: nil)
         let windowController = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier("Document Window Controller")) as! NSWindowController
         self.addWindowController(windowController)
+        
+        windowController.contentViewController?.representedObject = timeline
     }
 
     override func data(ofType typeName: String) throws -> Data {
-        // Insert code here to write your document to data of the specified type, throwing an error in case of failure.
-        // Alternatively, you could remove this method and override fileWrapper(ofType:), write(to:ofType:), or write(to:ofType:for:originalContentsURL:) instead.
-        throw NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
+        return try JSONEncoder().encode(timeline.tracks)
     }
 
     override func read(from data: Data, ofType typeName: String) throws {
-        // Insert code here to read your document from the given data of the specified type, throwing an error in case of failure.
-        // Alternatively, you could remove this method and override read(from:ofType:) instead.
-        // If you do, you should also override isEntireFileLoaded to return false if the contents are lazily loaded.
-        throw NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
+        timeline.tracks = try JSONDecoder().decode([AudioTrack].self, from: data)
     }
-
-
 }
 
