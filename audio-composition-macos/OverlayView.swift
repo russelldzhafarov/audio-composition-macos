@@ -36,7 +36,7 @@ class OverlayView: NSView {
         let startTime = timeline.visibleTimeRange.lowerBound
         let endTime = timeline.visibleTimeRange.upperBound
         
-        let pxPerSec = bounds.width / CGFloat(endTime - startTime)
+        let oneSecWidth = bounds.width / CGFloat(timeline.visibleDur)
         
         if let selectedTimeRange = timeline.selectedTimeRange {
             // Draw selection
@@ -46,7 +46,7 @@ class OverlayView: NSView {
             
             let duration = timeRange.upperBound - timeRange.lowerBound
             
-            let startPos = CGFloat(timeRange.lowerBound - timeline.visibleTimeRange.lowerBound) * pxPerSec
+            let startPos = CGFloat(timeRange.lowerBound - timeline.visibleTimeRange.lowerBound) * oneSecWidth
             
             // Draw selection borders
             ctx.move(to: CGPoint(x: startPos,
@@ -54,7 +54,7 @@ class OverlayView: NSView {
             ctx.addLine(to: CGPoint(x: startPos,
                                     y: bounds.height))
             
-            let endPos = startPos + CGFloat(duration) * pxPerSec
+            let endPos = startPos + CGFloat(duration) * oneSecWidth
             ctx.move(to: CGPoint(x: endPos,
                                  y: CGFloat(30)))
             ctx.addLine(to: CGPoint(x: endPos,
@@ -68,13 +68,13 @@ class OverlayView: NSView {
             ctx.setFillColor(NSColor.selectionColor.cgColor)
             ctx.fill(CGRect(x: startPos,
                             y: CGFloat(30),
-                            width: CGFloat(duration) * pxPerSec,
+                            width: CGFloat(duration) * oneSecWidth,
                             height: bounds.height))
         }
         
         if (startTime ..< endTime).contains(timeline.currentTime) {
             // Draw cursor
-            let cursorPos = CGFloat(timeline.currentTime - timeline.visibleTimeRange.lowerBound) * pxPerSec
+            let cursorPos = CGFloat(timeline.currentTime - timeline.visibleTimeRange.lowerBound) * oneSecWidth
             
             ctx.move(to: CGPoint(x: cursorPos,
                                  y: CGFloat(22)))
@@ -104,40 +104,68 @@ class OverlayView: NSView {
         guard let timeline = timeline,
               !timeline.isEmpty else { return }
         
+        // Clear selection
+        timeline.tracks.forEach{ $0.asset.isSelected = false }
+        timeline.needsDisplay = true
+        
         let start = convert(event.locationInWindow, from: nil)
         
         let duration = timeline.visibleDur
         let startTime = timeline.visibleTimeRange.lowerBound + (duration * Double(start.x) / Double(bounds.width))
         
+        let rulerRect = CGRect(origin: .zero, size: CGSize(width: bounds.width, height: CGFloat(30)))
+        if NSPointInRect(start, rulerRect) {
+            timeline.selectedTimeRange = nil
+            timeline.seek(to: startTime)
+            return
+        }
+        
+        let oneSecWidth = bounds.width / CGFloat(timeline.visibleDur)
+        
+        var selected: AudioAsset?
+        var y = CGFloat(30)
+        for track in timeline.tracks {
+            let assetRect = CGRect(x: CGFloat(track.asset.startTime - timeline.visibleTimeRange.lowerBound) * oneSecWidth,
+                                   y: y,
+                                   width: CGFloat(track.asset.duration) * oneSecWidth - CGFloat(4),
+                                   height: timeline.trackHeight)
+            
+            if NSPointInRect(start, assetRect) {
+                track.asset.isSelected = true
+                selected = track.asset
+                timeline.needsDisplay = true
+                break
+            }
+            
+            y += timeline.trackHeight
+        }
+        
+        if let selected = selected {
+            move(asset: selected, with: event)
+        }
+    }
+    
+    func move(asset: AudioAsset, with event: NSEvent) {
+        guard let timeline = timeline,
+              !timeline.isEmpty else { return }
+        
+        let start = convert(event.locationInWindow, from: nil)
+        
+        let assetStartTime = asset.startTime
         while true {
             guard let nextEvent = window?.nextEvent(matching: [.leftMouseUp, .leftMouseDragged]) else { continue }
             
             let end = convert(nextEvent.locationInWindow, from: nil)
             
-            if Int(start.x) == Int(end.x) && Int(start.y) == Int(end.y) {
-                timeline.selectedTimeRange = nil
-                timeline.currentTime = startTime.clamped(to: 0.0...timeline.duration)
+            if Int(start.x) != Int(end.x) {
+                let oneSecWidth = bounds.width / CGFloat(timeline.visibleDur)
+                let change = TimeInterval((end.x - start.x) / oneSecWidth)
                 
-            } else {
-                
-                let endTime = timeline.visibleTimeRange.lowerBound + (duration * Double(end.x) / Double(bounds.width))
-                
-                if startTime < endTime {
-                    timeline.selectedTimeRange = (startTime ..< endTime).clamped(to: 0 ..< timeline.duration)
-                    timeline.currentTime = startTime.clamped(to: 0.0...timeline.duration)
-                    
-                } else if startTime > endTime {
-                    timeline.selectedTimeRange = (endTime ..< startTime).clamped(to: 0 ..< timeline.duration)
-                    timeline.currentTime = endTime.clamped(to: 0.0...timeline.duration)
-                    
-                } else {
-                    timeline.selectedTimeRange = nil
-                    timeline.currentTime = startTime.clamped(to: 0.0...timeline.duration)
-                }
+                asset.startTime = max(0, (assetStartTime + change))
+                timeline.needsDisplay = true
             }
             
             if nextEvent.type == .leftMouseUp {
-                timeline.seek(to: timeline.currentTime)
                 break
             }
         }
