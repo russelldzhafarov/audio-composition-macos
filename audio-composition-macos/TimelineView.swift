@@ -21,43 +21,29 @@ class TimelineView: NSView {
         guard let timeline = timeline,
               let ctx = NSGraphicsContext.current?.cgContext else { return }
         
+        // Draw background color
         ctx.setFillColor(NSColor.timelineBackgroundColor.cgColor)
         ctx.fill(dirtyRect)
         
+        // Draw top horizontal line
         ctx.move(to: CGPoint(x: dirtyRect.minX,
                              y: .zero))
         ctx.addLine(to: CGPoint(x: dirtyRect.maxX,
                                 y: .zero))
-        
         ctx.setStrokeColor(NSColor.rulerColor.cgColor)
         ctx.strokePath()
         
-        let visibleDur = timeline.visibleDur
-        let oneSecWidth = dirtyRect.width / CGFloat(visibleDur)
-        
-        var y: CGFloat = timeline.trackHeight
+        // Draw tracks
+        var y: CGFloat = .zero
         for track in timeline.tracks {
+            // Draw waveform
+            drawWaveform(asset: track.asset, timeline: timeline, origin: CGPoint(x: .zero, y: y), color: NSColor.timelineWaveColor.cgColor, to: ctx)
             
-            ctx.setFillColor(NSColor.timelineTrackBackgroundColor.cgColor)
-            ctx.fill(CGRect(x: .zero, y: y - timeline.trackHeight, width: bounds.width, height: timeline.trackHeight))
-            
-            // Fill asset rect in timeline
-            let frame = CGRect(x: CGFloat(track.asset.startTime - timeline.visibleTimeRange.lowerBound) * oneSecWidth,
-                               y: y - timeline.trackHeight,
-                               width: CGFloat(track.asset.duration) * oneSecWidth,
-                               height: timeline.trackHeight)
-            
-            ctx.setFillColor(NSColor.timelineWaveBackgroundColor.cgColor)
-            ctx.fill(frame)
-            
-            drawWaveform(asset: track.asset, timeline: timeline, in: frame, color: NSColor.timelineWaveColor.cgColor, to: ctx)
-            
-            // Draw separator
+            // Draw horizontal separator
             ctx.move(to: CGPoint(x: dirtyRect.minX,
                                  y: y))
             ctx.addLine(to: CGPoint(x: dirtyRect.maxX,
                                     y: y))
-            
             ctx.setStrokeColor(NSColor.windowBackgroundColor.cgColor)
             ctx.setLineWidth(CGFloat(2))
             ctx.strokePath()
@@ -76,14 +62,39 @@ class TimelineView: NSView {
                                   height: timeline.trackHeight))
     }
     
-    func drawWaveform(asset: AudioAsset, timeline: Timeline, in frame: CGRect, color: CGColor, to ctx: CGContext) {
+    func drawWaveform(asset: AudioAsset, timeline: Timeline, origin: CGPoint, color: CGColor, to ctx: CGContext) {
+        
+        // Draw track background
+        ctx.setFillColor(NSColor.timelineTrackBackgroundColor.cgColor)
+        ctx.fill(CGRect(x: origin.x, y: origin.y, width: bounds.width, height: timeline.trackHeight))
+        
+        let timeRange = (asset.startTime ..< (asset.startTime + asset.duration)).clamped(to: timeline.visibleTimeRange.lowerBound..<timeline.visibleTimeRange.upperBound)
+        
+        guard !timeRange.isEmpty else { return }
+        
+        let visibleDur = timeline.visibleDur
+        let oneSecWidth = bounds.width / CGFloat(visibleDur)
+        
+        // Draw asset visible rect
+        let frame = CGRect(x: CGFloat(timeRange.lowerBound - timeline.visibleTimeRange.lowerBound) * oneSecWidth,
+                           y: origin.y,
+                           width: CGFloat(timeRange.upperBound - timeRange.lowerBound) * oneSecWidth,
+                           height: timeline.trackHeight)
+        
+        ctx.setFillColor(NSColor.timelineWaveBackgroundColor.cgColor)
+        ctx.fill(frame)
+        
+        
         let stepInPx = CGFloat(1)
         
         let koeff = bounds.width / stepInPx
-        let stepInSec = timeline.visibleDur / Double(koeff)
+        let stepInSec = visibleDur / Double(koeff)
+        
+        let startTime = timeRange.lowerBound - asset.startTime
+        let endTime = timeRange.upperBound - asset.startTime
         
         var x = frame.origin.x
-        for time in stride(from: .zero, to: asset.duration, by: stepInSec) {
+        for time in stride(from: startTime, to: endTime, by: stepInSec) {
             let power = asset.power(at: time)
             
             let heigth = max(CGFloat(1),
@@ -104,15 +115,15 @@ class TimelineView: NSView {
     }
     
     func drawString(s: NSString, withFont font: NSFont, color: NSColor, alignment: NSTextAlignment, inRect contextRect: CGRect) {
-
+        
         let fontHeight = font.pointSize
         let yOffset = (contextRect.size.height - fontHeight) / CGFloat(2)
-
+        
         let textRect = CGRect(x: contextRect.origin.x,
                               y: contextRect.origin.y + yOffset,
                               width: contextRect.size.width,
                               height: fontHeight)
-
+        
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = alignment
         
