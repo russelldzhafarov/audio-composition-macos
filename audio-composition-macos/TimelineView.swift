@@ -42,7 +42,7 @@ class TimelineView: NSView {
             ctx.fill(CGRect(x: .zero, y: y - timeline.trackHeight, width: bounds.width, height: timeline.trackHeight))
             
             // Fill asset rect in timeline
-            let frame = CGRect(x: CGFloat(track.asset.startTime.seconds - timeline.visibleTimeRange.lowerBound) * oneSecWidth,
+            let frame = CGRect(x: CGFloat(track.asset.startTime - timeline.visibleTimeRange.lowerBound) * oneSecWidth,
                                y: y - timeline.trackHeight,
                                width: CGFloat(track.asset.duration) * oneSecWidth,
                                height: timeline.trackHeight)
@@ -67,7 +67,7 @@ class TimelineView: NSView {
         
         // Draw hint string
         drawString(s: NSString(string: "+ Drop audio files here"),
-                   withFont: NSFont.systemFont(ofSize: 15),
+                   withFont: NSFont.systemFont(ofSize: 16),
                    color: NSColor.rulerColor,
                    alignment: .center,
                    inRect: CGRect(x: 0.0,
@@ -77,19 +77,13 @@ class TimelineView: NSView {
     }
     
     func drawWaveform(asset: AudioAsset, timeline: Timeline, in frame: CGRect, color: CGColor, to ctx: CGContext) {
-        let startTime = timeline.visibleTimeRange.lowerBound
-        let endTime = timeline.visibleTimeRange.upperBound
-        
-        let duration = timeline.visibleDur
-        
-        let lineWidth = CGFloat(1)
         let stepInPx = CGFloat(1)
         
-        let koeff = frame.width / stepInPx
-        let stepInSec = duration / Double(koeff)
+        let koeff = bounds.width / stepInPx
+        let stepInSec = timeline.visibleDur / Double(koeff)
         
         var x = frame.origin.x
-        for time in stride(from: startTime, to: endTime, by: stepInSec) {
+        for time in stride(from: .zero, to: asset.duration, by: stepInSec) {
             let power = asset.power(at: time)
             
             let heigth = max(CGFloat(1),
@@ -104,7 +98,7 @@ class TimelineView: NSView {
             x += stepInPx
         }
         
-        ctx.setLineWidth(lineWidth)
+        ctx.setLineWidth(CGFloat(1))
         ctx.setStrokeColor(color)
         ctx.strokePath()
     }
