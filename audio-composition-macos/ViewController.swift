@@ -10,7 +10,7 @@ import Combine
 
 class ViewController: NSViewController {
     
-    let savePanel: NSSavePanel = {
+    let exportPanel: NSSavePanel = {
         let panel = NSSavePanel()
         panel.nameFieldStringValue = "Untitled.m4a"
         return panel
@@ -31,20 +31,38 @@ class ViewController: NSViewController {
     @IBOutlet weak var timelineView: TimelineView!
     @IBOutlet weak var rulerView: RulerView!
     @IBOutlet weak var currentTimeLabel: NSTextField!
+    @IBOutlet weak var timelineScrollView: NSScrollView! {
+        didSet {
+            timelineScrollView.backgroundColor = NSColor.timelineBackgroundColor
+        }
+    }
     
     private var cancellables = Set<AnyCancellable>()
     
     deinit {
+        // Remove observers
         cancellables.forEach{ $0.cancel() }
         cancellables.removeAll()
+        if let token = token {
+            NotificationCenter.default.removeObserver(token)
+        }
     }
     
+    var token: NSObjectProtocol?
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        // Observing view bounds changes
+        overlayView.postsFrameChangedNotifications = true
+        token = NotificationCenter.default.addObserver(forName: NSView.frameDidChangeNotification, object: overlayView, queue: .main) { [weak self] _ in
+            guard let strongSelf = self else { return }
+            
+            strongSelf.timelineView.frame = NSRect(
+                origin: strongSelf.timelineView.frame.origin,
+                size: CGSize(width: strongSelf.timelineScrollView.documentVisibleRect.width,
+                             height: strongSelf.timelineView.frame.height))
+        }
     }
-
+    
     override var representedObject: Any? {
         didSet {
             guard let timeline = representedObject as? Timeline else { return }
@@ -61,8 +79,14 @@ class ViewController: NSViewController {
             timeline.$tracks
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] newValue in
-                    self?.timelineView.needsDisplay = true
-                    self?.exportButton.isEnabled = !newValue.isEmpty
+                    guard let strongSelf = self else { return }
+                    strongSelf.timelineView.frame = NSRect(
+                        origin: strongSelf.timelineView.frame.origin,
+                        size: CGSize(width: strongSelf.timelineScrollView.documentVisibleRect.width,
+                                     height: timeline.trackHeight * CGFloat(newValue.count + 1)))
+                    
+                    strongSelf.timelineView.needsDisplay = true
+                    strongSelf.exportButton.isEnabled = !newValue.isEmpty
                 }
                 .store(in: &cancellables)
             
@@ -150,9 +174,9 @@ class ViewController: NSViewController {
         timeline.forwardEnd()
     }
     @IBAction func actionExport(_ sender: Any) {
-        savePanel.begin { [weak self] response in
+        exportPanel.begin { [weak self] response in
             guard response == .OK,
-                  let url = self?.savePanel.url,
+                  let url = self?.exportPanel.url,
                   let timeline = self?.representedObject as? Timeline else { return }
             
             timeline.export(to: url)

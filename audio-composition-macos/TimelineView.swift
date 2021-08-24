@@ -21,18 +21,6 @@ class TimelineView: NSView {
         guard let timeline = timeline,
               let ctx = NSGraphicsContext.current?.cgContext else { return }
         
-        // Draw background color
-        ctx.setFillColor(NSColor.timelineBackgroundColor.cgColor)
-        ctx.fill(dirtyRect)
-        
-        // Draw top horizontal line
-        ctx.move(to: CGPoint(x: dirtyRect.minX,
-                             y: .zero))
-        ctx.addLine(to: CGPoint(x: dirtyRect.maxX,
-                                y: .zero))
-        ctx.setStrokeColor(NSColor.rulerColor.cgColor)
-        ctx.strokePath()
-        
         // Asset label attributed
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineBreakMode = .byTruncatingTail
