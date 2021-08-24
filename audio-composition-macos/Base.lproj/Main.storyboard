@@ -599,24 +599,24 @@
                             <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="O0B-nf-Puk">
                                 <rect key="frame" x="0.0" y="73" width="480" height="5"/>
                             </box>
-                            <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XkL-De-0on">
+                            <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="XkL-De-0on">
                                 <rect key="frame" x="0.0" y="76" width="480" height="154"/>
                                 <clipView key="contentView" id="7Td-4Y-gIQ">
-                                    <rect key="frame" x="1" y="1" width="478" height="152"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="480" height="154"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6wg-4d-bmY" customClass="TimelineView" customModule="audio_composition_macos" customModuleProvider="target">
-                                            <rect key="frame" x="0.0" y="-2" width="480" height="154"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="480" height="154"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         </customView>
                                     </subviews>
                                 </clipView>
                                 <scroller key="horizontalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="74V-VP-fhJ">
-                                    <rect key="frame" x="1" y="137" width="478" height="16"/>
+                                    <rect key="frame" x="0.0" y="138" width="480" height="16"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="g7c-5w-QbB">
-                                    <rect key="frame" x="463" y="1" width="16" height="152"/>
+                                    <rect key="frame" x="464" y="0.0" width="16" height="154"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>
@@ -651,11 +651,16 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="backwardButton" destination="rLs-nv-kyA" id="dVC-nB-Mw2"/>
+                        <outlet property="backwardEndButton" destination="nfp-x1-cxN" id="3y5-ww-Pc5"/>
                         <outlet property="currentTimeLabel" destination="hX8-qt-UCI" id="VUL-Ep-TTS"/>
                         <outlet property="exportButton" destination="IBr-EX-A5g" id="clq-vV-ZEg"/>
+                        <outlet property="forwardButton" destination="cK6-67-dcI" id="ycp-dK-z3H"/>
+                        <outlet property="forwardEndButton" destination="CgW-je-7v1" id="C14-fd-i9L"/>
                         <outlet property="overlayView" destination="Bxv-3M-c41" id="RAr-3O-bbU"/>
                         <outlet property="playButton" destination="HyL-e9-3Ed" id="ahl-qe-kAm"/>
                         <outlet property="rulerView" destination="Y0Z-9D-NV8" id="r1a-KH-ToU"/>
+                        <outlet property="statusLabel" destination="TtB-e1-6mt" id="pVi-VA-omZ"/>
                         <outlet property="timelineScrollView" destination="XkL-De-0on" id="msY-q6-qX9"/>
                         <outlet property="timelineView" destination="6wg-4d-bmY" id="B2E-FS-itL"/>
                     </connections>
