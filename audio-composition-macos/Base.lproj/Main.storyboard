@@ -455,9 +455,6 @@
                                     <constraint firstAttribute="height" constant="30" id="KwW-HP-343"/>
                                 </constraints>
                             </customView>
-                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="6wg-4d-bmY" customClass="TimelineView" customModule="audio_composition_macos" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="76" width="480" height="154"/>
-                            </customView>
                             <customView translatesAutoresizingMaskIntoConstraints="NO" id="HW2-dh-04K">
                                 <rect key="frame" x="0.0" y="25" width="480" height="50"/>
                                 <subviews>
@@ -596,40 +593,61 @@
                                     <constraint firstAttribute="height" constant="24" id="mew-G2-P4G"/>
                                 </constraints>
                             </customView>
-                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="Bxv-3M-c41" customClass="OverlayView" customModule="audio_composition_macos" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="76" width="480" height="184"/>
-                            </customView>
                             <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="5uz-1V-Baz">
                                 <rect key="frame" x="0.0" y="22" width="480" height="5"/>
                             </box>
                             <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="O0B-nf-Puk">
                                 <rect key="frame" x="0.0" y="73" width="480" height="5"/>
                             </box>
+                            <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XkL-De-0on">
+                                <rect key="frame" x="0.0" y="76" width="480" height="154"/>
+                                <clipView key="contentView" id="7Td-4Y-gIQ">
+                                    <rect key="frame" x="1" y="1" width="478" height="152"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6wg-4d-bmY" customClass="TimelineView" customModule="audio_composition_macos" customModuleProvider="target">
+                                            <rect key="frame" x="0.0" y="-2" width="480" height="154"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        </customView>
+                                    </subviews>
+                                </clipView>
+                                <scroller key="horizontalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="74V-VP-fhJ">
+                                    <rect key="frame" x="1" y="137" width="478" height="16"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                                <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="g7c-5w-QbB">
+                                    <rect key="frame" x="463" y="1" width="16" height="152"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                            </scrollView>
+                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="Bxv-3M-c41" customClass="OverlayView" customModule="audio_composition_macos" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="76" width="480" height="184"/>
+                            </customView>
                         </subviews>
                         <constraints>
-                            <constraint firstItem="O0B-nf-Puk" firstAttribute="top" secondItem="6wg-4d-bmY" secondAttribute="bottom" id="3lL-AB-6BP"/>
                             <constraint firstAttribute="bottom" secondItem="zSU-nQ-4ya" secondAttribute="bottom" id="5Lg-O2-na5"/>
                             <constraint firstItem="5uz-1V-Baz" firstAttribute="leading" secondItem="ERx-hH-rdd" secondAttribute="leading" id="5c2-Kw-URz"/>
+                            <constraint firstItem="XkL-De-0on" firstAttribute="leading" secondItem="ERx-hH-rdd" secondAttribute="leading" id="Bc5-sS-V3A"/>
                             <constraint firstItem="zSU-nQ-4ya" firstAttribute="top" secondItem="5uz-1V-Baz" secondAttribute="bottom" id="Bx1-IF-Vfh"/>
                             <constraint firstAttribute="trailing" secondItem="Y0Z-9D-NV8" secondAttribute="trailing" id="GHm-mB-Ayk"/>
                             <constraint firstAttribute="trailing" secondItem="zSU-nQ-4ya" secondAttribute="trailing" id="IW8-23-stP"/>
+                            <constraint firstAttribute="trailing" secondItem="XkL-De-0on" secondAttribute="trailing" id="JL5-eG-a1A"/>
                             <constraint firstItem="HW2-dh-04K" firstAttribute="leading" secondItem="ERx-hH-rdd" secondAttribute="leading" id="TdF-iq-MfZ"/>
-                            <constraint firstAttribute="trailing" secondItem="6wg-4d-bmY" secondAttribute="trailing" id="U2P-V9-P8u"/>
                             <constraint firstItem="Y0Z-9D-NV8" firstAttribute="leading" secondItem="ERx-hH-rdd" secondAttribute="leading" id="UMZ-hY-4E0"/>
                             <constraint firstAttribute="trailing" secondItem="HW2-dh-04K" secondAttribute="trailing" id="UgJ-OB-vFd"/>
                             <constraint firstAttribute="trailing" secondItem="5uz-1V-Baz" secondAttribute="trailing" id="W5C-Ag-vas"/>
-                            <constraint firstItem="6wg-4d-bmY" firstAttribute="top" secondItem="Y0Z-9D-NV8" secondAttribute="bottom" id="X4i-Ku-jPj"/>
                             <constraint firstItem="Y0Z-9D-NV8" firstAttribute="top" secondItem="ERx-hH-rdd" secondAttribute="top" constant="10" id="aK9-ry-beO"/>
                             <constraint firstAttribute="trailing" secondItem="Bxv-3M-c41" secondAttribute="trailing" id="b7p-aR-eah"/>
                             <constraint firstAttribute="trailing" secondItem="O0B-nf-Puk" secondAttribute="trailing" id="eSK-bh-QEv"/>
                             <constraint firstItem="Bxv-3M-c41" firstAttribute="leading" secondItem="ERx-hH-rdd" secondAttribute="leading" id="k1G-Aa-GAV"/>
                             <constraint firstItem="O0B-nf-Puk" firstAttribute="top" secondItem="Bxv-3M-c41" secondAttribute="bottom" id="kHS-eH-i9O"/>
                             <constraint firstItem="HW2-dh-04K" firstAttribute="top" secondItem="O0B-nf-Puk" secondAttribute="bottom" id="l6L-fA-z6l"/>
+                            <constraint firstItem="O0B-nf-Puk" firstAttribute="top" secondItem="XkL-De-0on" secondAttribute="bottom" id="lF3-yx-Oih"/>
                             <constraint firstItem="Bxv-3M-c41" firstAttribute="top" secondItem="ERx-hH-rdd" secondAttribute="top" constant="10" id="o2R-nZ-WUA"/>
                             <constraint firstItem="O0B-nf-Puk" firstAttribute="leading" secondItem="ERx-hH-rdd" secondAttribute="leading" id="r6h-Rp-MsF"/>
                             <constraint firstItem="zSU-nQ-4ya" firstAttribute="leading" secondItem="ERx-hH-rdd" secondAttribute="leading" id="sXV-5C-sWQ"/>
                             <constraint firstItem="5uz-1V-Baz" firstAttribute="top" secondItem="HW2-dh-04K" secondAttribute="bottom" id="vFe-u7-TWu"/>
-                            <constraint firstItem="6wg-4d-bmY" firstAttribute="leading" secondItem="ERx-hH-rdd" secondAttribute="leading" id="wFi-7d-H0K"/>
+                            <constraint firstItem="XkL-De-0on" firstAttribute="top" secondItem="Y0Z-9D-NV8" secondAttribute="bottom" id="zhF-3u-SPx"/>
                         </constraints>
                     </view>
                     <connections>
@@ -638,6 +656,7 @@
                         <outlet property="overlayView" destination="Bxv-3M-c41" id="RAr-3O-bbU"/>
                         <outlet property="playButton" destination="HyL-e9-3Ed" id="ahl-qe-kAm"/>
                         <outlet property="rulerView" destination="Y0Z-9D-NV8" id="r1a-KH-ToU"/>
+                        <outlet property="timelineScrollView" destination="XkL-De-0on" id="msY-q6-qX9"/>
                         <outlet property="timelineView" destination="6wg-4d-bmY" id="B2E-FS-itL"/>
                     </connections>
                 </viewController>
