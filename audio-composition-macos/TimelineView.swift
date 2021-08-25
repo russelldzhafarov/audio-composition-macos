@@ -17,6 +17,87 @@ class TimelineView: NSView {
     override var mouseDownCanMoveWindow: Bool { false }
     
     // MARK: - Events
+    override func rightMouseDown(with event: NSEvent) {
+        guard let timeline = timeline,
+              !timeline.isEmpty else { return }
+        
+        // Clear selection
+        timeline.tracks.forEach{ $0.asset?.isSelected = false }
+        timeline.needsDisplay = true
+        
+        let loc = convert(event.locationInWindow, from: nil)
+        let oneSecWidth = bounds.width / CGFloat(timeline.visibleDur)
+        
+        var selectedId: UUID?
+        var trackId: UUID?
+        var y = CGFloat.zero
+        for track in timeline.tracks {
+            let trackRect = CGRect(x: .zero, y: y, width: bounds.width, height: timeline.trackHeight)
+            
+            if NSPointInRect(loc, trackRect) {
+                trackId = track.id
+                
+                if let asset = track.asset {
+                    let assetRect = CGRect(x: CGFloat(asset.startTime - timeline.visibleTimeRange.lowerBound) * oneSecWidth,
+                                           y: y,
+                                           width: CGFloat(asset.duration) * oneSecWidth - CGFloat(4),
+                                           height: timeline.trackHeight)
+                    
+                    if NSPointInRect(loc, assetRect) {
+                        asset.isSelected = true
+                        selectedId = asset.id
+                        timeline.needsDisplay = true
+                    }
+                }
+                
+                break
+            }
+            
+            y += timeline.trackHeight
+        }
+        
+        if let selectedId = selectedId {
+            // show asset menu
+            let menu = NSMenu()
+            let menuItem = menu.insertItem(withTitle: "Remove track",
+                                           action: #selector(removeSelectedAsset(_:)),
+                                           keyEquivalent: "",
+                                           at: 0)
+            menuItem.representedObject = selectedId
+            NSMenu.popUpContextMenu(menu, with: event, for: self)
+            
+        } else {
+            if let trackId = trackId {
+                // show track menu
+                let menu = NSMenu()
+                let menuItem = menu.insertItem(withTitle: "Remove channel",
+                                               action: #selector(removeSelectedTrack(_:)),
+                                               keyEquivalent: "",
+                                               at: 0)
+                menuItem.representedObject = trackId
+                NSMenu.popUpContextMenu(menu, with: event, for: self)
+            }
+        }
+    }
+    @objc func removeSelectedAsset(_ sender: NSMenuItem) {
+        guard let timeline = timeline,
+              let assetId = sender.representedObject as? UUID else { return }
+        
+        for track in timeline.tracks {
+            if let asset = track.asset, asset.id == assetId {
+                track.asset = nil
+                needsDisplay = true
+                break
+            }
+        }
+    }
+    @objc func removeSelectedTrack(_ sender: NSMenuItem) {
+        guard let timeline = timeline,
+              let trackId = sender.representedObject as? UUID,
+              let idx = timeline.tracks.firstIndex(where: { $0.id == trackId }) else { return }
+        
+        timeline.tracks.remove(at: idx)
+    }
     override func scrollWheel(with event: NSEvent) {
         nextResponder?.scrollWheel(with: event)
         
@@ -40,7 +121,7 @@ class TimelineView: NSView {
               !timeline.isEmpty else { return }
         
         // Clear selection
-        timeline.tracks.forEach{ $0.asset.isSelected = false }
+        timeline.tracks.forEach{ $0.asset?.isSelected = false }
         timeline.needsDisplay = true
         
         let start = convert(event.locationInWindow, from: nil)
@@ -49,16 +130,18 @@ class TimelineView: NSView {
         var selected: AudioAsset?
         var y: CGFloat = .zero
         for track in timeline.tracks {
-            let assetRect = CGRect(x: CGFloat(track.asset.startTime - timeline.visibleTimeRange.lowerBound) * oneSecWidth,
-                                   y: y,
-                                   width: CGFloat(track.asset.duration) * oneSecWidth - CGFloat(4),
-                                   height: timeline.trackHeight)
-            
-            if NSPointInRect(start, assetRect) {
-                track.asset.isSelected = true
-                selected = track.asset
-                timeline.needsDisplay = true
-                break
+            if let asset = track.asset {
+                let assetRect = CGRect(x: CGFloat(asset.startTime - timeline.visibleTimeRange.lowerBound) * oneSecWidth,
+                                       y: y,
+                                       width: CGFloat(asset.duration) * oneSecWidth - CGFloat(4),
+                                       height: timeline.trackHeight)
+                
+                if NSPointInRect(start, assetRect) {
+                    asset.isSelected = true
+                    selected = asset
+                    timeline.needsDisplay = true
+                    break
+                }
             }
             
             y += timeline.trackHeight
@@ -115,34 +198,36 @@ class TimelineView: NSView {
         // Draw tracks
         var y: CGFloat = .zero
         for track in timeline.tracks {
-            // Draw waveform
-            drawWaveform(asset: track.asset, timeline: timeline, origin: CGPoint(x: .zero, y: y), color: NSColor.timelineWaveColor.cgColor, to: ctx)
-            
-            // Draw asset name
-            let frame = CGRect(x: CGFloat(2) + CGFloat(track.asset.startTime - timeline.visibleTimeRange.lowerBound) * oneSecWidth,
-                               y: CGFloat(2) + y,
-                               width: CGFloat(track.asset.duration) * oneSecWidth - CGFloat(4),
-                               height: timeline.trackHeight)
-            NSString(string: track.asset.name).draw(in: frame, withAttributes: attributes)
-            
-            // Draw horizontal separator
-            ctx.move(to: CGPoint(x: dirtyRect.minX,
-                                 y: y))
-            ctx.addLine(to: CGPoint(x: dirtyRect.maxX,
-                                    y: y))
-            ctx.setStrokeColor(NSColor.windowBackgroundColor.cgColor)
-            ctx.setLineWidth(CGFloat(2))
-            ctx.strokePath()
-            
-            // Draw asset selection
-            if track.asset.isSelected {
-                let frame = CGRect(x: CGFloat(track.asset.startTime - timeline.visibleTimeRange.lowerBound) * oneSecWidth,
-                                   y: y + CGFloat(2),
-                                   width: CGFloat(track.asset.duration) * oneSecWidth,
-                                   height: timeline.trackHeight - CGFloat(4))
-                ctx.setStrokeColor(NSColor.systemTeal.cgColor)
+            if let asset = track.asset {
+                // Draw waveform
+                drawWaveform(asset: asset, timeline: timeline, origin: CGPoint(x: .zero, y: y), color: NSColor.timelineWaveColor.cgColor, to: ctx)
+                
+                // Draw asset name
+                let frame = CGRect(x: CGFloat(2) + CGFloat(asset.startTime - timeline.visibleTimeRange.lowerBound) * oneSecWidth,
+                                   y: CGFloat(2) + y,
+                                   width: CGFloat(asset.duration) * oneSecWidth - CGFloat(4),
+                                   height: timeline.trackHeight)
+                NSString(string: asset.name).draw(in: frame, withAttributes: attributes)
+                
+                // Draw horizontal separator
+                ctx.move(to: CGPoint(x: dirtyRect.minX,
+                                     y: y))
+                ctx.addLine(to: CGPoint(x: dirtyRect.maxX,
+                                        y: y))
+                ctx.setStrokeColor(NSColor.windowBackgroundColor.cgColor)
                 ctx.setLineWidth(CGFloat(2))
-                ctx.stroke(frame)
+                ctx.strokePath()
+                
+                // Draw asset selection
+                if asset.isSelected {
+                    let frame = CGRect(x: CGFloat(asset.startTime - timeline.visibleTimeRange.lowerBound) * oneSecWidth,
+                                       y: y + CGFloat(2),
+                                       width: CGFloat(asset.duration) * oneSecWidth,
+                                       height: timeline.trackHeight - CGFloat(4))
+                    ctx.setStrokeColor(NSColor.systemTeal.cgColor)
+                    ctx.setLineWidth(CGFloat(2))
+                    ctx.stroke(frame)
+                }
             }
             
             y += timeline.trackHeight
