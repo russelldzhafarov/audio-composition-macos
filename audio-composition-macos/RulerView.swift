@@ -15,11 +15,31 @@ class RulerView: NSView {
     
     let attributes: [NSAttributedString.Key: Any] = [
         .foregroundColor: NSColor.rulerLabelColor,
-        .font: NSFont.systemFont(ofSize: CGFloat(13))
+        .font: NSFont.systemFont(ofSize: CGFloat(11))
     ]
     
     override var isFlipped: Bool { true }
     override var mouseDownCanMoveWindow: Bool { false }
+    
+    override func mouseDown(with event: NSEvent) {
+        guard let timeline = timeline,
+              !timeline.isEmpty else { return }
+        
+        while true {
+            guard let nextEvent = window?.nextEvent(matching: [.leftMouseUp, .leftMouseDragged]) else { continue }
+            
+            let end = convert(nextEvent.locationInWindow, from: nil)
+            let endTime = timeline.visibleTimeRange.lowerBound + (timeline.visibleDur * Double(end.x) / Double(bounds.width))
+            
+            timeline.selectedTimeRange = nil
+            timeline.currentTime = endTime
+            
+            if nextEvent.type == .leftMouseUp {
+                timeline.seek(to: timeline.currentTime)
+                break
+            }
+        }
+    }
     
     // MARK: - Drawing
     override func draw(_ dirtyRect: NSRect) {
