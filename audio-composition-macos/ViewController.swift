@@ -190,6 +190,27 @@ class ViewController: NSViewController {
     }
     
     // MARK: - Actions
+    @IBAction func actionSolo(_ sender: NSButton) {
+        guard let timeline = representedObject as? Timeline else { return }
+        
+        // Get current track
+        let row = tableView.row(for: sender)
+        guard timeline.tracks.indices.contains(row) else { return }
+        let track = timeline.tracks[row]
+        
+        timeline.solo(track: track, isOn: sender.state == .on)
+    }
+    @IBAction func actionMute(_ sender: NSButton) {
+        guard let timeline = representedObject as? Timeline else { return }
+        
+        // Get current track
+        let row = tableView.row(for: sender)
+        guard timeline.tracks.indices.contains(row) else { return }
+        let track = timeline.tracks[row]
+        
+        timeline.mute(track: track)
+    }
+    
     override func selectAll(_ sender: Any?) {
         guard let timeline = representedObject as? Timeline else { return }
         timeline.tracks.forEach{ $0.asset?.isSelected = true }

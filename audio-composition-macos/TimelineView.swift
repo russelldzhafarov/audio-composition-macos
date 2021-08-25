@@ -263,7 +263,18 @@ class TimelineView: NSView {
                            width: CGFloat(timeRange.upperBound - timeRange.lowerBound) * oneSecWidth,
                            height: timeline.trackHeight - CGFloat(4))
         
-        ctx.setFillColor(asset.isSelected ? NSColor.systemTeal.withAlphaComponent(0.6).cgColor : NSColor.timelineWaveBackgroundColor.cgColor)
+        let fillColor: NSColor
+        if track.isMuted {
+            fillColor = .gray
+        } else {
+            if asset.isSelected {
+                fillColor = NSColor.systemTeal.withAlphaComponent(0.6)
+            } else {
+                fillColor = NSColor.timelineWaveBackgroundColor
+            }
+        }
+        
+        ctx.setFillColor(fillColor.cgColor)
         ctx.fill(frame)
         
         

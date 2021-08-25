@@ -66,6 +66,34 @@ class Timeline: ObservableObject {
         timer = nil
     }
     
+    func mute(track: AudioTrack) {
+        let wasPlaying = playerState == .playing
+        if wasPlaying {
+            stop()
+        }
+        
+        track.isMuted.toggle()
+        needsDisplay = true
+        
+        if wasPlaying {
+            play()
+        }
+    }
+    func solo(track: AudioTrack, isOn: Bool) {
+        let wasPlaying = playerState == .playing
+        if wasPlaying {
+            stop()
+        }
+        
+        tracks.forEach{ $0.isMuted = isOn }
+        track.isMuted = false
+        needsDisplay = true
+        
+        if wasPlaying {
+            play()
+        }
+    }
+    
     func seek(to time: TimeInterval) {
         let wasPlaying = playerState == .playing
         if wasPlaying {

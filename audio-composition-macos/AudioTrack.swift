@@ -59,7 +59,8 @@ class AudioTrack: Identifiable, Codable {
     let player = AVAudioPlayerNode()
     
     public func schedule(at currentTime: TimeInterval) {
-        guard let asset = asset else { return }
+        guard !isMuted,
+              let asset = asset else { return }
         
         if currentTime > (asset.startTime + asset.duration) {
             return
