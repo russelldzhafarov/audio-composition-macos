@@ -32,6 +32,7 @@ class ViewController: NSViewController {
     @IBOutlet weak var playButton: NSButton!
     @IBOutlet weak var forwardButton: NSButton!
     @IBOutlet weak var forwardEndButton: NSButton!
+    @IBOutlet weak var tableScrollView: NSScrollView!
     
     @IBOutlet weak var exportButton: NSButton! {
         didSet {
@@ -59,19 +60,96 @@ class ViewController: NSViewController {
         // Remove observers
         cancellables.forEach{ $0.cancel() }
         cancellables.removeAll()
+        // remove any existing notification registration
+        NotificationCenter.default.removeObserver(self,
+                                                  name: NSView.boundsDidChangeNotification,
+                                                  object: tableScrollView)
         if let token = token {
             NotificationCenter.default.removeObserver(token)
+        }
+    }
+    
+    @objc func tableContentViewBoundsDidChange(_ notification: Notification) {
+        // get the changed content view from the notification
+        guard let changedContentView = notification.object as? NSClipView else { return }
+        
+        // get the origin of the NSClipView of the scroll view that
+        // we're watching
+        let changedBoundsOrigin = changedContentView.documentVisibleRect.origin
+        
+        // get the current scroll position of the document view
+        let curOffset = timelineScrollView.contentView.bounds.origin
+        var newOffset = curOffset
+        
+        // scrolling is synchronized in the vertical plane
+        // so only modify the y component of the offset
+        newOffset.y = changedBoundsOrigin.y
+        
+        // if our synced position is different from our current
+        // position, reposition our content view
+        if !NSEqualPoints(curOffset, changedBoundsOrigin) {
+            // note that a scroll view watching this one will
+            // get notified here
+            timelineScrollView.contentView.scroll(to: newOffset)
+            // we have to tell the NSScrollView to update its
+            // scrollers
+            timelineScrollView.reflectScrolledClipView(timelineScrollView.contentView)
+        }
+    }
+    
+    @objc func timelineContentViewBoundsDidChange(_ notification: Notification) {
+        guard let changedContentView = notification.object as? NSClipView else { return }
+        
+        let changedBoundsOrigin = changedContentView.documentVisibleRect.origin
+        
+        let curOffset = tableScrollView.contentView.bounds.origin
+        var newOffset = curOffset
+        
+        // scrolling is synchronized in the vertical plane
+        // so only modify the y component of the offset
+        newOffset.y = changedBoundsOrigin.y
+        
+        // if our synced position is different from our current
+        // position, reposition our content view
+        if !NSEqualPoints(curOffset, changedBoundsOrigin) {
+            // note that a scroll view watching this one will
+            // get notified here
+            tableScrollView.contentView.scroll(to: newOffset)
+            // we have to tell the NSScrollView to update its
+            // scrollers
+            tableScrollView.reflectScrolledClipView(tableScrollView.contentView)
         }
     }
     
     var token: NSObjectProtocol?
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Observing view bounds changes
+        let timelineContentView = timelineScrollView.contentView
+        timelineContentView.postsBoundsChangedNotifications = true
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(timelineContentViewBoundsDidChange(_:)),
+                                               name: NSView.boundsDidChangeNotification,
+                                               object: timelineContentView)
+        
+        
+        // Synchronizing table and timeline scroll views
+        // get the content view of the table view
+        let synchronizedContentView = tableScrollView.contentView
+        // Make sure the watched view is sending bounds changed
+        // notifications (which is probably does anyway, but calling
+        // this again won't hurt).
+        synchronizedContentView.postsBoundsChangedNotifications = true
+        // a register for those notifications on the synchronized content view.
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(tableContentViewBoundsDidChange(_:)),
+                                               name: NSView.boundsDidChangeNotification,
+                                               object: synchronizedContentView)
+        
+        // Observing view bounds changes to update timeline width
         overlayView.postsFrameChangedNotifications = true
         token = NotificationCenter.default.addObserver(forName: NSView.frameDidChangeNotification, object: overlayView, queue: .main) { [weak self] _ in
             guard let strongSelf = self else { return }
-            
+
             strongSelf.timelineView.frame = NSRect(
                 origin: strongSelf.timelineView.frame.origin,
                 size: CGSize(width: strongSelf.timelineScrollView.documentVisibleRect.width - (strongSelf.timelineScrollView.verticalRulerView?.bounds.width ?? .zero),
@@ -115,11 +193,11 @@ class ViewController: NSViewController {
                     guard let strongSelf = self else { return }
                     strongSelf.timelineView.frame = NSRect(
                         origin: strongSelf.timelineView.frame.origin,
-                        size: CGSize(width: strongSelf.timelineScrollView.documentVisibleRect.width,
+                        size: CGSize(width: strongSelf.timelineScrollView.documentVisibleRect.width - (strongSelf.timelineScrollView.verticalRulerView?.bounds.width ?? .zero),
                                      height: timeline.trackHeight * CGFloat(newValue.count + 1)))
-                    
+
                     strongSelf.timelineView.needsDisplay = true
-                    
+
                     strongSelf.tableView.reloadData()
                     
                     strongSelf.exportButton.isEnabled = !newValue.isEmpty
