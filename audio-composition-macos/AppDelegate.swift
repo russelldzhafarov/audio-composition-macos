@@ -15,6 +15,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 }
 
+class GridClipTableView: NSTableView {
+    override func drawGrid(inClipRect clipRect: NSRect) {}
+}
+
 extension NSImage.Name {
     static let play = NSImage.Name("play.fill")
     static let pause = NSImage.Name("pause.fill")
