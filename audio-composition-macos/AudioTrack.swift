@@ -17,9 +17,9 @@ class AudioTrack: Identifiable, Codable {
     
     let id = UUID()
     var name: String
-    var asset: AudioAsset
+    var asset: AudioAsset?
     
-    init(name: String, asset: AudioAsset) {
+    init(name: String, asset: AudioAsset?) {
         self.name = name
         self.asset = asset
     }
@@ -31,11 +31,13 @@ class AudioTrack: Identifiable, Codable {
     }
     
     var format: AVAudioFormat {
-        asset.format
+        guard let asset = asset else { return AVAudioFormat() }
+        return asset.format
     }
     
     var duration: TimeInterval {
-        asset.startTime + asset.duration
+        guard let asset = asset else { return 0 }
+        return asset.startTime + asset.duration
     }
     
     @objc dynamic var volume: Float = 1.0 {
@@ -57,6 +59,8 @@ class AudioTrack: Identifiable, Codable {
     let player = AVAudioPlayerNode()
     
     public func schedule(at currentTime: TimeInterval) {
+        guard let asset = asset else { return }
+        
         if currentTime > (asset.startTime + asset.duration) {
             return
         }

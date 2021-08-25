@@ -192,7 +192,7 @@ class ViewController: NSViewController {
     // MARK: - Actions
     override func selectAll(_ sender: Any?) {
         guard let timeline = representedObject as? Timeline else { return }
-        timeline.tracks.forEach{ $0.asset.isSelected = true }
+        timeline.tracks.forEach{ $0.asset?.isSelected = true }
         timeline.needsDisplay = true
     }
     @IBAction func actionBackwardEnd(_ sender: Any) {
