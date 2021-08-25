@@ -15,8 +15,24 @@ class ViewController: NSViewController {
         panel.nameFieldStringValue = "Untitled.m4a"
         return panel
     }()
+    let importPanel: NSOpenPanel = {
+        let panel = NSOpenPanel()
+        panel.allowedFileTypes = Timeline.acceptableUTITypes
+        return panel
+    }()
     
+    @IBOutlet weak var statusLabel: NSTextField!
+    @IBOutlet weak var tableView: NSTableView! {
+        didSet {
+            tableView.backgroundColor = NSColor.timelineBackgroundColor
+        }
+    }
+    @IBOutlet weak var backwardEndButton: NSButton!
+    @IBOutlet weak var backwardButton: NSButton!
     @IBOutlet weak var playButton: NSButton!
+    @IBOutlet weak var forwardButton: NSButton!
+    @IBOutlet weak var forwardEndButton: NSButton!
+    
     @IBOutlet weak var exportButton: NSButton! {
         didSet {
             let layer = CALayer()
@@ -58,14 +74,17 @@ class ViewController: NSViewController {
             
             strongSelf.timelineView.frame = NSRect(
                 origin: strongSelf.timelineView.frame.origin,
-                size: CGSize(width: strongSelf.timelineScrollView.documentVisibleRect.width,
+                size: CGSize(width: strongSelf.timelineScrollView.documentVisibleRect.width - (strongSelf.timelineScrollView.verticalRulerView?.bounds.width ?? .zero),
                              height: strongSelf.timelineView.frame.height))
         }
     }
     
     override var representedObject: Any? {
         didSet {
-            guard let timeline = representedObject as? Timeline else { return }
+            guard let timeline = representedObject as? Timeline,
+                  isViewLoaded else { return }
+            
+            tableView.rowHeight = timeline.trackHeight
             
             timeline.$needsDisplay
                 .receive(on: DispatchQueue.main)
@@ -73,6 +92,20 @@ class ViewController: NSViewController {
                     guard newValue else { return }
                     self?.timelineView.needsDisplay = true
                     timeline.needsDisplay = false
+                }
+                .store(in: &cancellables)
+            
+            timeline.$state
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] newValue in
+                    let isEnabled = newValue == .ready
+                    self?.exportButton.isEnabled = isEnabled
+                    self?.playButton.isEnabled = isEnabled
+                    self?.forwardButton.isEnabled = isEnabled
+                    self?.forwardEndButton.isEnabled = isEnabled
+                    self?.backwardButton.isEnabled = isEnabled
+                    self?.backwardEndButton.isEnabled = isEnabled
+                    self?.statusLabel.stringValue = newValue.rawValue
                 }
                 .store(in: &cancellables)
             
@@ -86,7 +119,15 @@ class ViewController: NSViewController {
                                      height: timeline.trackHeight * CGFloat(newValue.count + 1)))
                     
                     strongSelf.timelineView.needsDisplay = true
+                    
+                    strongSelf.tableView.reloadData()
+                    
                     strongSelf.exportButton.isEnabled = !newValue.isEmpty
+                    strongSelf.playButton.isEnabled = !newValue.isEmpty
+                    strongSelf.forwardButton.isEnabled = !newValue.isEmpty
+                    strongSelf.forwardEndButton.isEnabled = !newValue.isEmpty
+                    strongSelf.backwardButton.isEnabled = !newValue.isEmpty
+                    strongSelf.backwardEndButton.isEnabled = !newValue.isEmpty
                 }
                 .store(in: &cancellables)
             
@@ -151,7 +192,8 @@ class ViewController: NSViewController {
     // MARK: - Actions
     override func selectAll(_ sender: Any?) {
         guard let timeline = representedObject as? Timeline else { return }
-        timeline.selectedTimeRange = 0.0 ..< timeline.duration
+        timeline.tracks.forEach{ $0.asset.isSelected = true }
+        timeline.needsDisplay = true
     }
     @IBAction func actionBackwardEnd(_ sender: Any) {
         guard let timeline = representedObject as? Timeline else { return }
@@ -174,13 +216,30 @@ class ViewController: NSViewController {
         timeline.forwardEnd()
     }
     @IBAction func actionExport(_ sender: Any) {
-        exportPanel.begin { [weak self] response in
-            guard response == .OK,
-                  let url = self?.exportPanel.url,
-                  let timeline = self?.representedObject as? Timeline else { return }
-            
-            timeline.export(to: url)
-        }
+        let response = exportPanel.runModal()
+        guard response == .OK,
+              let url = exportPanel.url,
+              let timeline = representedObject as? Timeline else { return }
+        
+        timeline.export(to: url)
+    }
+    @IBAction func importAction(_ sender: Any) {
+        let response = importPanel.runModal()
+        guard response == .OK,
+              let url = importPanel.url,
+              let timeline = representedObject as? Timeline else { return }
+        
+        timeline.importFile(at: url)
     }
 }
 
+extension ViewController: NSTableViewDataSource {
+    func numberOfRows(in tableView: NSTableView) -> Int {
+        guard let timeline = representedObject as? Timeline else { return 0 }
+        return timeline.tracks.count
+    }
+    func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
+        guard let timeline = representedObject as? Timeline else { return nil }
+        return timeline.tracks[row]
+    }
+}
