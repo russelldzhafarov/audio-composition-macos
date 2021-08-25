@@ -154,15 +154,21 @@ class Timeline: ObservableObject {
     }
     
     func export(to url: URL) {
-        let format: AVAudioFormat = AVAudioFormat()
-        let settings: [String: Any] = [:]
-        let fileLength: AVAudioFramePosition = 0
+        let format = audioEngine.mainMixerNode.outputFormat(forBus: AVAudioNodeBus(0))
+        var settings = format.settings
+        settings[AVFormatIDKey] = kAudioFormatMPEG4AAC
+        let fileLength = AVAudioFramePosition((duration - TimeInterval(60)) * format.sampleRate)
         
-        audioExporter.export(timeline: self,
-                             engine: audioEngine,
-                             format: format,
-                             settings: settings,
-                             fileLength: fileLength,
-                             outputURL: url)
+        state = .processing
+        serviceQueue.addOperation { [weak self] in
+            guard let strongSelf = self else { return }
+            strongSelf.audioExporter.export(timeline: strongSelf,
+                                            engine: strongSelf.audioEngine,
+                                            format: format,
+                                            settings: settings,
+                                            fileLength: fileLength,
+                                            outputURL: url)
+            strongSelf.state = .ready
+        }
     }
 }
