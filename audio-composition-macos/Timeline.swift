@@ -12,11 +12,14 @@ class Timeline: ObservableObject {
     
     let trackHeight = CGFloat(60)
     
-    var acceptableUTITypes: [String] {
-        ["public.mp3", "com.apple.m4a-audio", "com.microsoft.waveform-audio"]
-    }
-    enum State {
-        case processing, ready
+    static let acceptableUTITypes = [
+        "public.mp3",
+        "com.apple.m4a-audio",
+        "com.microsoft.waveform-audio"
+    ]
+    
+    enum State: String {
+        case processing = "Processing...", ready = "Ready"
     }
     enum AppError: Error {
         case read
