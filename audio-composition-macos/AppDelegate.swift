@@ -24,12 +24,6 @@ extension NSImage.Name {
     static let pause = NSImage.Name("pause.fill")
 }
 
-extension NSColor {
-    class func random() -> NSColor {
-        NSColor(calibratedRed: CGFloat.random(in: 0.6...0.9), green: CGFloat.random(in: 0.6...0.9), blue: CGFloat.random(in: 0.6...0.9), alpha: CGFloat(1))
-    }
-}
-
 extension Array where Element == Float {
     /// Takes an array of floating point values and down samples it to have a lesser number of samples
     /// Returns an array of downsampled floating point values
@@ -84,7 +78,7 @@ extension NSColor {
         NSColor.systemRed
     }
     static var selectionColor: NSColor {
-        NSColor.keyboardFocusIndicatorColor.withAlphaComponent(0.3)
+        NSColor.systemTeal.withAlphaComponent(0.7)
     }
     static var highlightColor: NSColor {
         NSColor.keyboardFocusIndicatorColor.withAlphaComponent(0.2)
