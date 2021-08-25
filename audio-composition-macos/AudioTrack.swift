@@ -8,7 +8,7 @@
 import AVFoundation
 import Cocoa
 
-class AudioTrack: Identifiable, Codable {
+class AudioTrack: NSObject, Identifiable, Codable {
     
     enum CodingKeys: String, CodingKey {
         case name
@@ -16,23 +16,24 @@ class AudioTrack: Identifiable, Codable {
     }
     
     let id = UUID()
-    var name: String
+    @objc var name: String
     var asset: AudioAsset?
     
     init(name: String, asset: AudioAsset?) {
         self.name = name
         self.asset = asset
+        super.init()
     }
     
     required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         name = try values.decode(String.self, forKey: .name)
         asset = try values.decode(AudioAsset.self, forKey: .asset)
+        super.init()
     }
     
-    var format: AVAudioFormat {
-        guard let asset = asset else { return AVAudioFormat() }
-        return asset.format
+    var format: AVAudioFormat? {
+        return asset?.format
     }
     
     var duration: TimeInterval {
