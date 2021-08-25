@@ -35,7 +35,7 @@ class AudioTrack: Identifiable, Codable {
     }
     
     var duration: TimeInterval {
-        asset.duration
+        asset.startTime + asset.duration
     }
     
     @objc dynamic var volume: Float = 1.0 {
