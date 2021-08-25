@@ -167,19 +167,20 @@ class Timeline: ObservableObject {
     func importFile(at url: URL) {
         state = .processing
         
-        serviceQueue.addOperation {
+        serviceQueue.addOperation { [weak self] in
+            guard let strongSelf = self else { return }
             defer {
-                self.state = .ready
+                strongSelf.state = .ready
             }
             do {
                 guard let asset = try AudioAsset(url: url, startTime: .zero) else {
                     throw AppError.read
                 }
-                self.tracks.append(AudioTrack(name: "Track",
-                                              asset: asset))
+                strongSelf.tracks.append(AudioTrack(name: "Channel # \(strongSelf.tracks.count + 1)",
+                                                    asset: asset))
                 
             } catch {
-                self.error = error
+                strongSelf.error = error
             }
         }
     }
