@@ -17,6 +17,27 @@ class OverlayView: NSView {
     override var acceptsFirstResponder: Bool { true }
     override var mouseDownCanMoveWindow: Bool { false }
     
+    // MARK: - Events
+    override func magnify(with event: NSEvent) {
+        guard let timeline = timeline else { return }
+        
+        let scale = CGFloat(1) + event.magnification
+        
+        let duration = timeline.visibleDur
+        let newDuration = duration / Double(scale)
+        
+        let loc = convert(event.locationInWindow, from: nil)
+        let time = timeline.visibleTimeRange.lowerBound + (duration * Double(loc.x) / Double(bounds.width))
+        
+        let startTime = time - ((time - timeline.visibleTimeRange.lowerBound) / Double(scale))
+        let endTime = startTime + newDuration
+        
+        guard startTime < endTime else { return }
+        
+        timeline.visibleTimeRange = (startTime ..< endTime).clamped(to: 0 ..< timeline.duration)
+    }
+    
+    // MARK: - Drawing
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
 
@@ -100,77 +121,6 @@ class OverlayView: NSView {
         }
     }
     
-    override func mouseDown(with event: NSEvent) {
-        guard let timeline = timeline,
-              !timeline.isEmpty else { return }
-        
-        // Clear selection
-        timeline.tracks.forEach{ $0.asset.isSelected = false }
-        timeline.needsDisplay = true
-        
-        let start = convert(event.locationInWindow, from: nil)
-        
-        let duration = timeline.visibleDur
-        let startTime = timeline.visibleTimeRange.lowerBound + (duration * Double(start.x) / Double(bounds.width))
-        
-        let rulerRect = CGRect(origin: .zero, size: CGSize(width: bounds.width, height: CGFloat(30)))
-        if NSPointInRect(start, rulerRect) {
-            timeline.selectedTimeRange = nil
-            timeline.seek(to: startTime)
-            return
-        }
-        
-        let oneSecWidth = bounds.width / CGFloat(timeline.visibleDur)
-        
-        var selected: AudioAsset?
-        var y = CGFloat(30)
-        for track in timeline.tracks {
-            let assetRect = CGRect(x: CGFloat(track.asset.startTime - timeline.visibleTimeRange.lowerBound) * oneSecWidth,
-                                   y: y,
-                                   width: CGFloat(track.asset.duration) * oneSecWidth - CGFloat(4),
-                                   height: timeline.trackHeight)
-            
-            if NSPointInRect(start, assetRect) {
-                track.asset.isSelected = true
-                selected = track.asset
-                timeline.needsDisplay = true
-                break
-            }
-            
-            y += timeline.trackHeight
-        }
-        
-        if let selected = selected {
-            move(asset: selected, with: event)
-        }
-    }
-    
-    func move(asset: AudioAsset, with event: NSEvent) {
-        guard let timeline = timeline,
-              !timeline.isEmpty else { return }
-        
-        let start = convert(event.locationInWindow, from: nil)
-        
-        let assetStartTime = asset.startTime
-        while true {
-            guard let nextEvent = window?.nextEvent(matching: [.leftMouseUp, .leftMouseDragged]) else { continue }
-            
-            let end = convert(nextEvent.locationInWindow, from: nil)
-            
-            if Int(start.x) != Int(end.x) {
-                let oneSecWidth = bounds.width / CGFloat(timeline.visibleDur)
-                let change = TimeInterval((end.x - start.x) / oneSecWidth)
-                
-                asset.startTime = max(0, (assetStartTime + change))
-                timeline.needsDisplay = true
-            }
-            
-            if nextEvent.type == .leftMouseUp {
-                break
-            }
-        }
-    }
-    
     // MARK: - Drag & Drop
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -178,7 +128,7 @@ class OverlayView: NSView {
     }
     override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
         guard sender.draggingPasteboard.canReadObject(forClasses: [NSURL.self],
-                                                      options: [.urlReadingContentsConformToTypes: timeline?.acceptableUTITypes ?? []]) else { return NSDragOperation() }
+                                                      options: [.urlReadingContentsConformToTypes: Timeline.acceptableUTITypes]) else { return NSDragOperation() }
         
         timeline?.highlighted = true
         
@@ -196,41 +146,5 @@ class OverlayView: NSView {
         timeline?.importFile(at: fileURL as URL)
         
         return true
-    }
-    
-    // MARK: - Events
-    override func scrollWheel(with event: NSEvent) {
-        guard let timeline = timeline else { return }
-        
-        let duration = timeline.visibleDur
-        let secPerPx = CGFloat(duration) / bounds.width
-        
-        let deltaPixels = event.deltaX < 0
-            ? min(-event.deltaX * secPerPx,
-                  CGFloat(timeline.duration - timeline.visibleTimeRange.upperBound))
-            : min(event.deltaX * secPerPx,
-                  CGFloat(timeline.visibleTimeRange.lowerBound)) * -1
-        
-        if deltaPixels != 0 {
-            timeline.visibleTimeRange = timeline.visibleTimeRange.lowerBound + Double(deltaPixels) ..< timeline.visibleTimeRange.upperBound + Double(deltaPixels)
-        }
-    }
-    override func magnify(with event: NSEvent) {
-        guard let timeline = timeline else { return }
-        
-        let scale = CGFloat(1) + event.magnification
-        
-        let duration = timeline.visibleDur
-        let newDuration = duration / Double(scale)
-        
-        let loc = convert(event.locationInWindow, from: nil)
-        let time = timeline.visibleTimeRange.lowerBound + (duration * Double(loc.x) / Double(bounds.width))
-        
-        let startTime = time - ((time - timeline.visibleTimeRange.lowerBound) / Double(scale))
-        let endTime = startTime + newDuration
-        
-        guard startTime < endTime else { return }
-        
-        timeline.visibleTimeRange = (startTime ..< endTime).clamped(to: 0 ..< timeline.duration)
     }
 }
