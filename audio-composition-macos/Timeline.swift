@@ -41,6 +41,10 @@ class Timeline: ObservableObject {
     @Published var error: Error?
     @Published var needsDisplay = false
     
+    init(tracks: [AudioTrack]) {
+        self.tracks = tracks
+    }
+    
     var visibleDur: TimeInterval {
         visibleTimeRange.upperBound - visibleTimeRange.lowerBound
     }
@@ -72,6 +76,7 @@ class Timeline: ObservableObject {
             stop()
         }
         
+        tracks.forEach{ $0.soloEnabled = false }
         track.isMuted.toggle()
         track.soloEnabled = false
         needsDisplay = true
@@ -182,8 +187,12 @@ class Timeline: ObservableObject {
                 guard let asset = try AudioAsset(url: url, startTime: .zero) else {
                     throw AppError.read
                 }
-                strongSelf.tracks.append(AudioTrack(name: "Channel # \(strongSelf.tracks.count + 1)",
-                                                    asset: asset))
+                let track = AudioTrack(name: "Channel # \(strongSelf.tracks.count + 1)",
+                                       asset: asset)
+                // Mute track if solo enabled in another channel
+                track.isMuted = !strongSelf.tracks.filter{ $0.soloEnabled }.isEmpty
+                
+                strongSelf.tracks.append(track)
                 
             } catch {
                 strongSelf.error = error

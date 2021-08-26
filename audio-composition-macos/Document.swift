@@ -9,7 +9,7 @@ import Cocoa
 
 class Document: NSDocument {
     
-    let timeline = Timeline()
+    let timeline = Timeline(tracks: [AudioTrack(name: "Channel # 1", asset: nil)])
     
     override init() {
         super.init()
