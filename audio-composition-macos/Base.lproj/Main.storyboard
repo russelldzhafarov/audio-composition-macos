@@ -671,6 +671,22 @@
                                                                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="waveform.path" catalog="system" id="Z5w-UJ-8GI"/>
                                                                                 <color key="contentTintColor" name="secondaryLabelColor"/>
                                                                             </imageView>
+                                                                            <box boxType="custom" borderType="line" borderWidth="2" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="Pie-fN-xHA">
+                                                                                <rect key="frame" x="111" y="37" width="24" height="23"/>
+                                                                                <view key="contentView" id="6Aa-bQ-8Te">
+                                                                                    <rect key="frame" x="2" y="2" width="20" height="19"/>
+                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                                </view>
+                                                                                <color key="borderColor" name="systemOrangeColor" catalog="System" colorSpace="catalog"/>
+                                                                                <color key="fillColor" red="1" green="0.62237995859999995" blue="0.045259602369999999" alpha="0.502288818359375" colorSpace="custom" customColorSpace="sRGB"/>
+                                                                                <connections>
+                                                                                    <binding destination="9fj-hn-JYt" name="hidden" keyPath="objectValue.soloEnabled" id="zeV-5w-Asa">
+                                                                                        <dictionary key="options">
+                                                                                            <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                                                                        </dictionary>
+                                                                                    </binding>
+                                                                                </connections>
+                                                                            </box>
                                                                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ZJB-pN-Q8m">
                                                                                 <rect key="frame" x="115" y="41" width="16" height="16"/>
                                                                                 <constraints>
@@ -685,6 +701,22 @@
                                                                                     <action selector="actionSolo:" target="5gI-5U-AMq" id="rnj-Yg-dLH"/>
                                                                                 </connections>
                                                                             </button>
+                                                                            <box boxType="custom" borderType="line" borderWidth="2" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="hxB-1j-R8f">
+                                                                                <rect key="frame" x="136" y="37" width="24" height="23"/>
+                                                                                <view key="contentView" id="a0F-8m-9k3">
+                                                                                    <rect key="frame" x="2" y="2" width="20" height="19"/>
+                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                                </view>
+                                                                                <color key="borderColor" name="systemRedColor" catalog="System" colorSpace="catalog"/>
+                                                                                <color key="fillColor" red="0.99889177080000002" green="0.27067053320000001" blue="0.22574257850000001" alpha="0.50150963249329994" colorSpace="custom" customColorSpace="sRGB"/>
+                                                                                <connections>
+                                                                                    <binding destination="9fj-hn-JYt" name="hidden" keyPath="objectValue.isMuted" id="1VJ-td-bC6">
+                                                                                        <dictionary key="options">
+                                                                                            <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                                                                        </dictionary>
+                                                                                    </binding>
+                                                                                </connections>
+                                                                            </box>
                                                                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="AZB-UI-HfZ">
                                                                                 <rect key="frame" x="140" y="41" width="16" height="16"/>
                                                                                 <constraints>
@@ -743,21 +775,29 @@
                                                                             <constraint firstItem="AZB-UI-HfZ" firstAttribute="centerY" secondItem="J9Y-oU-U80" secondAttribute="centerY" id="4aC-0j-ONU"/>
                                                                             <constraint firstAttribute="bottom" secondItem="vCx-ux-So9" secondAttribute="bottom" constant="12" id="AfX-xC-c9p"/>
                                                                             <constraint firstAttribute="trailing" secondItem="BkN-53-Odw" secondAttribute="trailing" id="BpB-Ul-XEv"/>
+                                                                            <constraint firstItem="hxB-1j-R8f" firstAttribute="leading" secondItem="HtY-4d-29S" secondAttribute="trailing" id="CVt-dz-2mD"/>
                                                                             <constraint firstItem="J9Y-oU-U80" firstAttribute="leading" secondItem="sHt-EU-o7J" secondAttribute="trailing" constant="2" id="Ims-5X-sRG"/>
                                                                             <constraint firstItem="BkN-53-Odw" firstAttribute="leading" secondItem="DLX-jB-JHD" secondAttribute="leading" id="J8G-1d-1Ba"/>
+                                                                            <constraint firstAttribute="trailing" secondItem="hxB-1j-R8f" secondAttribute="trailing" id="Pd0-Is-JCz"/>
                                                                             <constraint firstItem="UPG-bg-1qs" firstAttribute="centerX" secondItem="HtY-4d-29S" secondAttribute="centerX" id="Qgo-RY-KTs"/>
+                                                                            <constraint firstItem="Pie-fN-xHA" firstAttribute="leading" secondItem="Hnr-5k-RPV" secondAttribute="trailing" id="SXZ-pk-9fd"/>
                                                                             <constraint firstItem="HtY-4d-29S" firstAttribute="leading" secondItem="ZJB-pN-Q8m" secondAttribute="trailing" constant="4" id="Y7Y-Ip-sTX"/>
                                                                             <constraint firstItem="UPG-bg-1qs" firstAttribute="centerY" secondItem="vCx-ux-So9" secondAttribute="centerY" id="a2G-FU-aQh"/>
                                                                             <constraint firstItem="HtY-4d-29S" firstAttribute="top" secondItem="DLX-jB-JHD" secondAttribute="top" id="a2u-iF-tVK"/>
                                                                             <constraint firstItem="Hnr-5k-RPV" firstAttribute="top" secondItem="DLX-jB-JHD" secondAttribute="top" id="aU8-ZE-7TQ"/>
                                                                             <constraint firstItem="BkN-53-Odw" firstAttribute="top" secondItem="sHt-EU-o7J" secondAttribute="bottom" constant="8" symbolic="YES" id="crT-5j-PU5"/>
+                                                                            <constraint firstItem="BkN-53-Odw" firstAttribute="top" secondItem="hxB-1j-R8f" secondAttribute="bottom" id="dI7-3l-Ke6"/>
                                                                             <constraint firstItem="J9Y-oU-U80" firstAttribute="centerY" secondItem="sHt-EU-o7J" secondAttribute="centerY" id="dtL-d6-h9U"/>
                                                                             <constraint firstItem="Hnr-5k-RPV" firstAttribute="leading" secondItem="J9Y-oU-U80" secondAttribute="trailing" constant="4" id="eEw-Om-0GM"/>
                                                                             <constraint firstItem="ZJB-pN-Q8m" firstAttribute="leading" secondItem="Hnr-5k-RPV" secondAttribute="trailing" constant="4" id="fHn-ck-On0"/>
+                                                                            <constraint firstItem="Pie-fN-xHA" firstAttribute="top" secondItem="DLX-jB-JHD" secondAttribute="top" id="qCd-ng-fx6"/>
+                                                                            <constraint firstItem="hxB-1j-R8f" firstAttribute="top" secondItem="DLX-jB-JHD" secondAttribute="top" id="rIn-ub-cVf"/>
                                                                             <constraint firstItem="vCx-ux-So9" firstAttribute="leading" secondItem="DLX-jB-JHD" secondAttribute="leading" constant="8" id="tVa-hE-hSb"/>
                                                                             <constraint firstItem="sHt-EU-o7J" firstAttribute="top" secondItem="DLX-jB-JHD" secondAttribute="top" constant="7" id="ve3-r7-hV2"/>
                                                                             <constraint firstItem="BkN-53-Odw" firstAttribute="top" secondItem="HtY-4d-29S" secondAttribute="bottom" id="yf1-5n-6wE"/>
+                                                                            <constraint firstItem="BkN-53-Odw" firstAttribute="top" secondItem="Pie-fN-xHA" secondAttribute="bottom" id="yq1-uw-6gR"/>
                                                                             <constraint firstItem="sHt-EU-o7J" firstAttribute="leading" secondItem="DLX-jB-JHD" secondAttribute="leading" constant="8" id="zK0-0S-Qgk"/>
+                                                                            <constraint firstItem="HtY-4d-29S" firstAttribute="leading" secondItem="Pie-fN-xHA" secondAttribute="trailing" id="zdA-mN-u5G"/>
                                                                         </constraints>
                                                                     </view>
                                                                     <color key="fillColor" red="0.15294117647058825" green="0.16470588235294117" blue="0.21176470588235294" alpha="1" colorSpace="deviceRGB"/>

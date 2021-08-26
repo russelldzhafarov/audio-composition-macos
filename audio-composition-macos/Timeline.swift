@@ -73,20 +73,26 @@ class Timeline: ObservableObject {
         }
         
         track.isMuted.toggle()
+        track.soloEnabled = false
         needsDisplay = true
         
         if wasPlaying {
             play()
         }
     }
-    func solo(track: AudioTrack, isOn: Bool) {
+    func solo(track: AudioTrack) {
         let wasPlaying = playerState == .playing
         if wasPlaying {
             stop()
         }
         
+        let isOn = !track.soloEnabled
+        tracks.forEach{ $0.soloEnabled = false }
         tracks.forEach{ $0.isMuted = isOn }
+        
+        track.soloEnabled = isOn
         track.isMuted = false
+        
         needsDisplay = true
         
         if wasPlaying {

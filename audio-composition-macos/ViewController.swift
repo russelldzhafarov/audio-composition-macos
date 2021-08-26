@@ -276,7 +276,7 @@ class ViewController: NSViewController {
         guard timeline.tracks.indices.contains(row) else { return }
         let track = timeline.tracks[row]
         
-        timeline.solo(track: track, isOn: sender.state == .on)
+        timeline.solo(track: track)
     }
     @IBAction func actionMute(_ sender: NSButton) {
         guard let timeline = representedObject as? Timeline else { return }

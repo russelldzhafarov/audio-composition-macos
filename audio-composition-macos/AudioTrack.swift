@@ -51,7 +51,8 @@ class AudioTrack: NSObject, Identifiable, Codable {
             player.pan = pan
         }
     }
-    var isMuted: Bool = false {
+    @objc dynamic var soloEnabled: Bool = false
+    @objc dynamic var isMuted: Bool = false {
         didSet {
             player.volume = isMuted ? 0.0 : volume
         }
