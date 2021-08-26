@@ -148,12 +148,15 @@ class ViewController: NSViewController {
         // Observing view bounds changes to update timeline width
         overlayView.postsFrameChangedNotifications = true
         token = NotificationCenter.default.addObserver(forName: NSView.frameDidChangeNotification, object: overlayView, queue: .main) { [weak self] _ in
-            guard let strongSelf = self else { return }
-
+            guard let strongSelf = self, let timeline = strongSelf.representedObject as? Timeline else { return }
+            
+            let height = max(timeline.trackHeight * CGFloat(timeline.tracks.count),
+                             strongSelf.timelineScrollView.documentVisibleRect.height - (strongSelf.timelineScrollView.horizontalRulerView?.bounds.height ?? .zero))
+            
             strongSelf.timelineView.frame = NSRect(
                 origin: strongSelf.timelineView.frame.origin,
                 size: CGSize(width: strongSelf.timelineScrollView.documentVisibleRect.width - (strongSelf.timelineScrollView.verticalRulerView?.bounds.width ?? .zero),
-                             height: strongSelf.timelineView.frame.height))
+                             height: height))
         }
     }
     
@@ -191,10 +194,13 @@ class ViewController: NSViewController {
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] newValue in
                     guard let strongSelf = self else { return }
+                    let height = max(timeline.trackHeight * CGFloat(timeline.tracks.count),
+                                     strongSelf.timelineScrollView.documentVisibleRect.height - (strongSelf.timelineScrollView.horizontalRulerView?.bounds.height ?? .zero))
+                    
                     strongSelf.timelineView.frame = NSRect(
                         origin: strongSelf.timelineView.frame.origin,
                         size: CGSize(width: strongSelf.timelineScrollView.documentVisibleRect.width - (strongSelf.timelineScrollView.verticalRulerView?.bounds.width ?? .zero),
-                                     height: timeline.trackHeight * CGFloat(newValue.count + 1)))
+                                     height: height))
 
                     strongSelf.timelineView.needsDisplay = true
 
