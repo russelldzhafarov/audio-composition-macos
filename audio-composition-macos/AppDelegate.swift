@@ -77,7 +77,10 @@ extension NSColor {
     static var timelineCursorColor: NSColor {
         NSColor.systemRed
     }
-    static var selectionColor: NSColor {
+    static var selectionStrokeColor: NSColor {
+        NSColor.systemTeal.withAlphaComponent(0.8)
+    }
+    static var selectionFillColor: NSColor {
         NSColor.systemTeal.withAlphaComponent(0.7)
     }
     static var highlightColor: NSColor {

@@ -219,7 +219,7 @@ class TimelineView: NSView {
                                        y: y + CGFloat(1),
                                        width: CGFloat(asset.duration) * oneSecWidth,
                                        height: timeline.trackHeight - CGFloat(2))
-                    ctx.setStrokeColor(NSColor.selectionColor.cgColor)
+                    ctx.setStrokeColor(NSColor.selectionStrokeColor.cgColor)
                     ctx.setLineWidth(CGFloat(2))
                     ctx.stroke(frame)
                 }
@@ -268,7 +268,7 @@ class TimelineView: NSView {
             fillColor = .gray
         } else {
             if asset.isSelected {
-                fillColor = NSColor.timelineWaveBackgroundColor
+                fillColor = NSColor.selectionFillColor
             } else {
                 fillColor = NSColor.timelineWaveBackgroundColor
             }

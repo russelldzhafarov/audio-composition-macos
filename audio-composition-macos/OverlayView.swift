@@ -86,7 +86,7 @@ class OverlayView: NSView {
             ctx.strokePath()
             
             // Draw selection background
-            ctx.setFillColor(NSColor.selectionColor.cgColor)
+            ctx.setFillColor(NSColor.selectionFillColor.cgColor)
             ctx.fill(CGRect(x: startPos,
                             y: CGFloat(30),
                             width: CGFloat(duration) * oneSecWidth,
