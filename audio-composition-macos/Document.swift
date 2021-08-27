@@ -9,7 +9,7 @@ import Cocoa
 
 class Document: NSDocument {
     
-    let timeline = Timeline(tracks: [AudioTrack(name: "Channel # 1", assets: [])])
+    let timeline = Timeline(tracks: [], undoManager: nil)
     
     override init() {
         super.init()
@@ -26,9 +26,12 @@ class Document: NSDocument {
         let windowController = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier("Document Window Controller")) as! NSWindowController
         self.addWindowController(windowController)
         
+        timeline.undoManager = windowController.window?.undoManager
+        timeline.tracks = [AudioTrack(id: UUID(), name: "Channel # 1", assets: [])]
+        
         windowController.contentViewController?.representedObject = timeline
     }
-
+    
     override func data(ofType typeName: String) throws -> Data {
         return try JSONEncoder().encode(timeline.tracks)
     }

@@ -42,8 +42,11 @@ class Timeline: ObservableObject {
     @Published var error: Error?
     @Published var needsDisplay = false
     
-    init(tracks: [AudioTrack]) {
+    var undoManager: UndoManager?
+    
+    init(tracks: [AudioTrack], undoManager: UndoManager?) {
         self.tracks = tracks
+        self.undoManager = undoManager
     }
     
     var visibleDur: TimeInterval {
@@ -104,7 +107,7 @@ class Timeline: ObservableObject {
         do {
             let assets = try JSONDecoder().decode([AudioAsset].self, from: data)
             
-            tracks.last?.assets.append(contentsOf: assets)
+            insertAssets(assets)
             
             needsDisplay = true
             
@@ -126,42 +129,83 @@ class Timeline: ObservableObject {
         }
         guard !assets.isEmpty else { return }
         
+        removeAssets(assets)
+        
+        needsDisplay = true
+        
+        if playerState == .playing {
+            stop()
+            play()
+        }
+    }
+    
+    func addTrack(_ track: AudioTrack) {
+        undoManager?.registerUndo(withTarget: self) { target in
+            target.removeTrack(track)
+        }
+        
+        tracks.append(track)
+    }
+    
+    func addNewTrack() {
+        let track = AudioTrack(id: UUID(),
+                               name: "Channel # \(tracks.count + 1)",
+                               assets: [])
+        // Mute track if solo enabled in another channel
+        track.isMuted = !tracks.filter{ $0.soloEnabled }.isEmpty
+        
+        undoManager?.registerUndo(withTarget: self) { target in
+            target.removeTrack(track)
+        }
+        
+        tracks.append(track)
+    }
+    func removeTrack(_ track: AudioTrack) {
+        undoManager?.registerUndo(withTarget: self) { target in
+            target.addTrack(track)
+        }
+        
+        tracks.removeAll(where: { $0.id == track.id })
+        
+        if playerState == .playing {
+            stop()
+            play()
+        }
+    }
+    func insertAssets(_ assets: [AudioAsset]) {
+        let updated = assets.compactMap{ try? AudioAsset(id: UUID(), trackId: $0.trackId, url: $0.url, startTime: $0.startTime) }
+        undoManager?.registerUndo(withTarget: self) { target in
+            target.removeAssets(updated)
+        }
+        
+        for asset in updated {
+            if let track = tracks.first(where: { $0.id == asset.trackId }) {
+                track.assets.append(asset)
+            }
+        }
+        
+        needsDisplay = true
+    }
+    
+    func removeAssets(_ assets: [AudioAsset]) {
+        undoManager?.registerUndo(withTarget: self) { target in
+            target.insertAssets(assets)
+        }
+        
         for asset in assets {
-            if let track = track(for: asset.id) {
+            if let track = tracks.first(where: { $0.id == asset.trackId }) {
                 track.assets.removeAll(where: { $0.id == asset.id })
             }
         }
         
         needsDisplay = true
-        
-        if playerState == .playing {
-            stop()
-            play()
-        }
     }
     
-    func track(for assetId: UUID) -> AudioTrack? {
-        for track in tracks {
-            if track.assets.contains(where: { $0.id == assetId }) {
-                return track
-            }
-        }
-        return nil
-    }
-    
-    func removeAsset(withId assetId: UUID) {
-        guard let track = track(for: assetId) else { return }
-        track.assets.removeAll(where: { $0.id == assetId })
+    func removeAsset(_ asset: AudioAsset) {
+        guard let track = tracks.first(where: { $0.id == asset.trackId }) else { return }
+        track.assets.removeAll(where: { $0.id == asset.id })
         
         needsDisplay = true
-        
-        if playerState == .playing {
-            stop()
-            play()
-        }
-    }
-    func removeTrack(withId trackId: UUID) {
-        tracks.removeAll(where: { $0.id == trackId })
         
         if playerState == .playing {
             stop()
@@ -176,8 +220,10 @@ class Timeline: ObservableObject {
         }
         
         // Remove asset from prev track
-        removeAsset(withId: asset.id)
+        removeAsset(asset)
+        
         // Assign asset to new track
+        asset.trackId = track.id
         track.assets.append(asset)
         
         if wasPlaying {
@@ -296,7 +342,7 @@ class Timeline: ObservableObject {
         seek(to: TimeInterval(0))
     }
     
-    func importFile(at url: URL, to track: AudioTrack?) {
+    func importFile(at url: URL, startTime: TimeInterval, to track: AudioTrack?) {
         state = .processing
         
         serviceQueue.addOperation { [weak self] in
@@ -305,20 +351,27 @@ class Timeline: ObservableObject {
                 strongSelf.state = .ready
             }
             do {
-                guard let asset = try AudioAsset(url: url, startTime: .zero) else {
-                    throw AppError.read
-                }
                 if let track = track {
-                    track.assets.append(asset)
-                    strongSelf.needsDisplay = true
+                    guard let asset = try AudioAsset(id: UUID(), trackId: track.id, url: url, startTime: startTime) else {
+                        throw AppError.read
+                    }
+                    
+                    strongSelf.insertAssets([asset])
                     
                 } else {
-                    let aTrack = AudioTrack(name: "Channel # \(strongSelf.tracks.count + 1)",
-                                           assets: [asset])
+                    guard let asset = try AudioAsset(id: UUID(), trackId: UUID(), url: url, startTime: startTime) else {
+                        throw AppError.read
+                    }
+                    
+                    strongSelf.insertAssets([asset])
+                    
+                    let aTrack = AudioTrack(id: UUID(),
+                                            name: "Channel # \(strongSelf.tracks.count + 1)",
+                                            assets: [asset])
                     // Mute track if solo enabled in another channel
                     aTrack.isMuted = !strongSelf.tracks.filter{ $0.soloEnabled }.isEmpty
                     
-                    strongSelf.tracks.append(aTrack)
+                    strongSelf.addTrack(aTrack)
                 }
                 
             } catch {
