@@ -346,4 +346,33 @@ class TimelineView: NSView {
         
         s.draw(in: textRect, withAttributes: attributes)
     }
+    
+    // MARK: - Drag & Drop
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        registerForDraggedTypes([.fileURL])
+    }
+    override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
+        guard sender.draggingPasteboard.canReadObject(forClasses: [NSURL.self],
+                                                      options: [.urlReadingContentsConformToTypes: Timeline.acceptableUTITypes]) else { return NSDragOperation() }
+        
+        timeline?.highlighted = true
+        
+        return .copy
+    }
+    override func draggingExited(_ sender: NSDraggingInfo?) {
+        timeline?.highlighted = false
+    }
+    override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        let pboard = sender.draggingPasteboard
+        guard pboard.types?.contains(.fileURL) == true,
+              let fileURL = NSURL(from: pboard) else { return false }
+        
+        timeline?.highlighted = false
+        
+        let loc = convert(sender.draggingLocation, from: nil)
+        timeline?.importFile(at: fileURL as URL, to: timeline?.track(at: loc))
+        
+        return true
+    }
 }
