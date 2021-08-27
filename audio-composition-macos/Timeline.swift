@@ -70,14 +70,20 @@ class Timeline: ObservableObject {
         timer = nil
     }
     
-    func removeAsset(withId assetId: UUID) {
+    func track(for assetId: UUID) -> AudioTrack? {
         for track in tracks {
-            if let asset = track.asset, asset.id == assetId {
-                track.asset = nil
-                needsDisplay = true
-                break
+            if track.assets.contains(where: { $0.id == assetId }) {
+                return track
             }
         }
+        return nil
+    }
+    
+    func removeAsset(withId assetId: UUID) {
+        guard let track = track(for: assetId) else { return }
+        track.assets.removeAll(where: { $0.id == assetId })
+        
+        needsDisplay = true
         
         if playerState == .playing {
             stop()
@@ -85,8 +91,7 @@ class Timeline: ObservableObject {
         }
     }
     func removeTrack(withId trackId: UUID) {
-        guard let idx = tracks.firstIndex(where: { $0.id == trackId }) else { return }
-        tracks.remove(at: idx)
+        tracks.removeAll(where: { $0.id == trackId })
         
         if playerState == .playing {
             stop()
@@ -101,9 +106,9 @@ class Timeline: ObservableObject {
         }
         
         // Remove asset from prev track
-        tracks.filter{ $0.asset?.id == asset.id }.forEach{ $0.asset = nil }
+        removeAsset(withId: asset.id)
         // Assign asset to new track
-        track.asset = asset
+        track.assets.append(asset)
         
         if wasPlaying {
             play()
@@ -234,12 +239,12 @@ class Timeline: ObservableObject {
                     throw AppError.read
                 }
                 if let track = track {
-                    track.asset = asset
+                    track.assets.append(asset)
                     strongSelf.needsDisplay = true
                     
                 } else {
                     let aTrack = AudioTrack(name: "Channel # \(strongSelf.tracks.count + 1)",
-                                           asset: asset)
+                                           assets: [asset])
                     // Mute track if solo enabled in another channel
                     aTrack.isMuted = !strongSelf.tracks.filter{ $0.soloEnabled }.isEmpty
                     

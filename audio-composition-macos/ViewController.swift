@@ -297,7 +297,9 @@ class ViewController: NSViewController {
     
     override func selectAll(_ sender: Any?) {
         guard let timeline = representedObject as? Timeline else { return }
-        timeline.tracks.forEach{ $0.asset?.isSelected = true }
+        for track in timeline.tracks {
+            track.assets.forEach{ $0.isSelected = true }
+        }
         timeline.needsDisplay = true
     }
     @IBAction func actionBackwardEnd(_ sender: Any) {

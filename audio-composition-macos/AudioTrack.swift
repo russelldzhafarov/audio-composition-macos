@@ -12,33 +12,32 @@ class AudioTrack: NSObject, Identifiable, Codable {
     
     enum CodingKeys: String, CodingKey {
         case name
-        case asset
+        case assets
     }
     
     let id = UUID()
     @objc var name: String
-    var asset: AudioAsset?
+    var assets: [AudioAsset]
     
-    init(name: String, asset: AudioAsset?) {
+    init(name: String, assets: [AudioAsset]) {
         self.name = name
-        self.asset = asset
+        self.assets = assets
         super.init()
     }
     
     required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         name = try values.decode(String.self, forKey: .name)
-        asset = try values.decode(AudioAsset.self, forKey: .asset)
+        assets = try values.decode([AudioAsset].self, forKey: .assets)
         super.init()
     }
     
     var format: AVAudioFormat? {
-        return asset?.format
+        return nil
     }
     
     var duration: TimeInterval {
-        guard let asset = asset else { return 0 }
-        return asset.startTime + asset.duration
+        assets.map{ $0.startTime + $0.duration }.max() ?? .zero
     }
     
     @objc dynamic var volume: Float = 1.0 {
@@ -61,28 +60,26 @@ class AudioTrack: NSObject, Identifiable, Codable {
     let player = AVAudioPlayerNode()
     
     public func schedule(at currentTime: TimeInterval) {
-        guard !isMuted,
-              let asset = asset else { return }
-        
-        if currentTime > (asset.startTime + asset.duration) {
-            return
-        }
-        
-        let time = AVAudioTime(
-            sampleTime: AVAudioFramePosition((asset.startTime - currentTime) * asset.buffer.format.sampleRate),
-            atRate: asset.buffer.format.sampleRate)
-        
-        if currentTime <= asset.startTime {
-            player.scheduleBuffer(asset.buffer, at: time)
-        }
-        
-        if currentTime > asset.startTime && currentTime < (asset.startTime + asset.duration) {
+        guard !isMuted else { return }
+        for asset in assets {
+            guard currentTime < (asset.startTime + asset.duration) else {continue}
             
-            let from = currentTime - asset.startTime
-            let to = Double(asset.buffer.frameCapacity) / asset.buffer.format.sampleRate
+            let time = AVAudioTime(
+                sampleTime: AVAudioFramePosition((asset.startTime - currentTime) * asset.buffer.format.sampleRate),
+                atRate: asset.buffer.format.sampleRate)
             
-            if let segment = asset.buffer.extract(from: from, to: to) {
-                player.scheduleBuffer(segment, at: nil)
+            if currentTime <= asset.startTime {
+                player.scheduleBuffer(asset.buffer, at: time)
+            }
+            
+            if currentTime > asset.startTime && currentTime < (asset.startTime + asset.duration) {
+                
+                let from = currentTime - asset.startTime
+                let to = Double(asset.buffer.frameCapacity) / asset.buffer.format.sampleRate
+                
+                if let segment = asset.buffer.extract(from: from, to: to) {
+                    player.scheduleBuffer(segment, at: nil)
+                }
             }
         }
     }

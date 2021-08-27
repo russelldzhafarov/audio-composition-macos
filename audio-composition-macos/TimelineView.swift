@@ -25,7 +25,9 @@ class TimelineView: NSView {
               !timeline.isEmpty else { return }
         
         // Clear selection
-        timeline.tracks.forEach{ $0.asset?.isSelected = false }
+        for track in timeline.tracks {
+            track.assets.forEach{ $0.isSelected = false }
+        }
         timeline.needsDisplay = true
         
         let loc = convert(event.locationInWindow, from: nil)
@@ -40,7 +42,7 @@ class TimelineView: NSView {
             if NSPointInRect(loc, trackRect) {
                 trackId = track.id
                 
-                if let asset = track.asset {
+                for asset in track.assets {
                     let assetRect = CGRect(x: CGFloat(asset.startTime - timeline.visibleTimeRange.lowerBound) * oneSecWidth,
                                            y: y,
                                            width: CGFloat(asset.duration) * oneSecWidth - CGFloat(4),
@@ -113,7 +115,9 @@ class TimelineView: NSView {
               !timeline.isEmpty else { return }
         
         // Clear selection
-        timeline.tracks.forEach{ $0.asset?.isSelected = false }
+        for track in timeline.tracks {
+            track.assets.forEach{ $0.isSelected = false }
+        }
         timeline.needsDisplay = true
         
         let start = convert(event.locationInWindow, from: nil)
@@ -122,7 +126,7 @@ class TimelineView: NSView {
         var selected: AudioAsset?
         var y: CGFloat = .zero
         for track in timeline.tracks {
-            if let asset = track.asset {
+            for asset in track.assets {
                 let assetRect = CGRect(x: CGFloat(asset.startTime - timeline.visibleTimeRange.lowerBound) * oneSecWidth,
                                        y: y,
                                        width: CGFloat(asset.duration) * oneSecWidth - CGFloat(4),
@@ -134,6 +138,10 @@ class TimelineView: NSView {
                     timeline.needsDisplay = true
                     break
                 }
+            }
+            
+            if selected != nil {
+                break
             }
             
             y += timeline.trackHeight
@@ -234,7 +242,7 @@ class TimelineView: NSView {
         // Draw tracks
         var y: CGFloat = .zero
         for track in timeline.tracks {
-            if let asset = track.asset {
+            for asset in track.assets {
                 
                 let origin: NSPoint
                 if let id = dragId, let dragLoc = dragLoc, asset.id == id {
