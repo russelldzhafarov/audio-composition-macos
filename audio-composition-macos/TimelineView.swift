@@ -385,14 +385,18 @@ class TimelineView: NSView {
         timeline?.highlighted = false
     }
     override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        guard let timeline = timeline else { return false }
+        
         let pboard = sender.draggingPasteboard
         guard pboard.types?.contains(.fileURL) == true,
               let fileURL = NSURL(from: pboard) else { return false }
         
-        timeline?.highlighted = false
+        timeline.highlighted = false
         
         let loc = convert(sender.draggingLocation, from: nil)
-        timeline?.importFile(at: fileURL as URL, to: timeline?.track(at: loc))
+        let time = timeline.visibleTimeRange.lowerBound + (timeline.visibleDur * Double(loc.x) / Double(bounds.width))
+        
+        timeline.importFile(at: fileURL as URL, startTime: time, to: timeline.track(at: loc))
         
         return true
     }
