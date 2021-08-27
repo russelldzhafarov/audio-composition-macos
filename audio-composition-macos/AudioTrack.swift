@@ -11,15 +11,18 @@ import Cocoa
 class AudioTrack: NSObject, Identifiable, Codable {
     
     enum CodingKeys: String, CodingKey {
+        case id
         case name
         case assets
     }
     
-    let id = UUID()
+    var id: UUID
+    
     @objc var name: String
     var assets: [AudioAsset]
     
-    init(name: String, assets: [AudioAsset]) {
+    init(id: UUID, name: String, assets: [AudioAsset]) {
+        self.id = id
         self.name = name
         self.assets = assets
         super.init()
@@ -27,6 +30,7 @@ class AudioTrack: NSObject, Identifiable, Codable {
     
     required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
+        id = try values.decode(UUID.self, forKey: .id)
         name = try values.decode(String.self, forKey: .name)
         assets = try values.decode([AudioAsset].self, forKey: .assets)
         super.init()

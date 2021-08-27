@@ -10,11 +10,14 @@ import AVFoundation
 class AudioAsset: Identifiable, Codable {
     
     enum CodingKeys: String, CodingKey {
+        case id
+        case trackId
         case url
         case startTime
     }
     
-    let id = UUID()
+    var id: UUID
+    var trackId: UUID
     
     var url: URL
     var startTime: TimeInterval
@@ -27,9 +30,12 @@ class AudioAsset: Identifiable, Codable {
         url.lastPathComponent
     }
     
-    init?(url: URL, startTime: TimeInterval) throws {
+    init?(id: UUID, trackId: UUID, url: URL, startTime: TimeInterval) throws {
+        self.id = id
+        self.trackId = trackId
         self.url = url
         self.startTime = startTime
+        
         guard let buffer = try AVAudioPCMBuffer(url: url) else { return nil }
         self.buffer = buffer
         self.amps = buffer.compressed()
@@ -37,6 +43,8 @@ class AudioAsset: Identifiable, Codable {
     
     required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
+        id = try values.decode(UUID.self, forKey: .id)
+        trackId = try values.decode(UUID.self, forKey: .trackId)
         url = try values.decode(URL.self, forKey: .url)
         startTime = try values.decode(Double.self, forKey: .startTime)
         
