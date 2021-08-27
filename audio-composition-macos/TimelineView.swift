@@ -198,13 +198,42 @@ class TimelineView: NSView {
         
         let oneSecWidth = bounds.width / CGFloat(timeline.visibleDur)
         
+        // Draw tracks background
+        ctx.setFillColor(NSColor.timelineTrackBackgroundColor.cgColor)
+        ctx.fill(CGRect(x: .zero, y: .zero,
+                        width: bounds.width,
+                        height: CGFloat(timeline.tracks.count) * timeline.trackHeight))
+        
+        // Draw separators between tracks
+        do {
+            var y = timeline.trackHeight
+            for _ in timeline.tracks {
+                // Draw horizontal separator
+                ctx.move(to: CGPoint(x: .zero,
+                                     y: y))
+                ctx.addLine(to: CGPoint(x: bounds.width,
+                                        y: y))
+                ctx.setStrokeColor(NSColor.timelineBackgroundColor.cgColor)
+                ctx.setLineWidth(CGFloat(1))
+                ctx.strokePath()
+                
+                y += timeline.trackHeight
+            }
+        }
+        
+        // Draw hint string
+        drawString(s: NSString(string: "+ Drop audio files here"),
+                   withFont: NSFont.systemFont(ofSize: 16),
+                   color: NSColor.rulerColor,
+                   alignment: .center,
+                   inRect: CGRect(x: 0.0,
+                                  y: timeline.trackHeight * CGFloat(timeline.tracks.count),
+                                  width: dirtyRect.width,
+                                  height: timeline.trackHeight))
+        
         // Draw tracks
         var y: CGFloat = .zero
         for track in timeline.tracks {
-            // Draw track background
-            ctx.setFillColor(NSColor.timelineTrackBackgroundColor.cgColor)
-            ctx.fill(CGRect(x: .zero, y:y, width: bounds.width, height: timeline.trackHeight))
-            
             if let asset = track.asset {
                 
                 let origin: NSPoint
@@ -243,27 +272,8 @@ class TimelineView: NSView {
                 }
             }
             
-            // Draw horizontal separator
-            ctx.move(to: CGPoint(x: dirtyRect.minX,
-                                 y: y))
-            ctx.addLine(to: CGPoint(x: dirtyRect.maxX,
-                                    y: y))
-            ctx.setStrokeColor(NSColor.timelineBackgroundColor.cgColor)
-            ctx.setLineWidth(CGFloat(1))
-            ctx.strokePath()
-            
             y += timeline.trackHeight
         }
-        
-        // Draw hint string
-        drawString(s: NSString(string: "+ Drop audio files here"),
-                   withFont: NSFont.systemFont(ofSize: 16),
-                   color: NSColor.rulerColor,
-                   alignment: .center,
-                   inRect: CGRect(x: 0.0,
-                                  y: timeline.trackHeight * CGFloat(timeline.tracks.count),
-                                  width: dirtyRect.width,
-                                  height: timeline.trackHeight))
     }
     
     func drawWaveform(asset: AudioAsset, track: AudioTrack, timeline: Timeline, origin: CGPoint, color: CGColor, to ctx: CGContext) {
@@ -284,9 +294,11 @@ class TimelineView: NSView {
         let fillColor: NSColor
         if track.isMuted {
             fillColor = .gray
+            
         } else {
             if asset.isSelected {
                 fillColor = NSColor.selectionFillColor
+                
             } else {
                 fillColor = NSColor.timelineWaveBackgroundColor
             }
@@ -294,7 +306,8 @@ class TimelineView: NSView {
         
         ctx.setFillColor(fillColor.cgColor)
         ctx.fill(frame)
-        
+        ctx.setStrokeColor(NSColor.timelineWaveBorderColor.cgColor)
+        ctx.stroke(frame)
         
         let stepInPx = CGFloat(1)
         
