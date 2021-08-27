@@ -9,6 +9,35 @@ import AVFoundation
 import Accelerate
 
 extension AVAudioPCMBuffer {
+    convenience init?(data: [NSData], format: AVAudioFormat) {
+        self.init(pcmFormat: format,
+                  frameCapacity: UInt32(data[0].length) / format.streamDescription.pointee.mBytesPerFrame)
+        
+        self.frameLength = self.frameCapacity
+        let channels = UnsafeBufferPointer(start: floatChannelData, count: Int(format.channelCount))
+        
+        for i in 0..<Int(format.channelCount) {
+            data[i].getBytes(UnsafeMutableRawPointer(channels[i]),
+                             length: data[i].length)
+        }
+    }
+    func toData() -> [Data] {
+        let channelCount = Int(format.channelCount)
+        let channels = UnsafeBufferPointer(start: floatChannelData,
+                                           count: channelCount)
+        
+        var result: [Data] = []
+        for i in 0..<channelCount {
+            result.append(
+                Data(bytes: channels[i],
+                     count: Int(self.frameCapacity * self.format.streamDescription.pointee.mBytesPerFrame))
+            )
+        }
+        return result
+    }
+}
+
+extension AVAudioPCMBuffer {
     // Read the contents of the url into this buffer
     convenience init?(url: URL) throws {
         guard let file = try? AVAudioFile(forReading: url) else { return nil }
