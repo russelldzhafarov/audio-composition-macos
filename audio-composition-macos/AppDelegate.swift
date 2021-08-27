@@ -72,7 +72,10 @@ extension NSColor {
         NSColor(red: 178.0/255.0, green: 199.0/255.0, blue: 233.0/255.0, alpha: 1.0)
     }
     static var timelineWaveBackgroundColor: NSColor {
-        NSColor(red: 65.0/255.0, green: 115.0/255.0, blue: 167.0/255.0, alpha: 1.0)
+        NSColor.systemTeal.withAlphaComponent(0.5)
+    }
+    static var timelineWaveBorderColor: NSColor {
+        NSColor.systemTeal.withAlphaComponent(0.8)
     }
     static var timelineCursorColor: NSColor {
         NSColor.systemRed
