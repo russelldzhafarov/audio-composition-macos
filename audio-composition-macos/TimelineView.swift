@@ -16,6 +16,9 @@ class TimelineView: NSView {
     override var isFlipped: Bool { true }
     override var mouseDownCanMoveWindow: Bool { false }
     
+    var dragId: UUID?
+    var dragLoc: NSPoint?
+    
     // MARK: - Events
     override func rightMouseDown(with event: NSEvent) {
         guard let timeline = timeline,
@@ -159,10 +162,15 @@ class TimelineView: NSView {
         let start = convert(event.locationInWindow, from: nil)
         
         let assetStartTime = asset.startTime
+        
+        dragId = asset.id
+        dragLoc = start
+        
         while true {
             guard let nextEvent = window?.nextEvent(matching: [.leftMouseUp, .leftMouseDragged]) else { continue }
             
             let end = convert(nextEvent.locationInWindow, from: nil)
+            dragLoc = end
             
             if Int(start.x) != Int(end.x) {
                 let oneSecWidth = bounds.width / CGFloat(timeline.visibleDur)
@@ -173,6 +181,12 @@ class TimelineView: NSView {
             }
             
             if nextEvent.type == .leftMouseUp {
+                dragId = nil
+                dragLoc = nil
+                if let track = timeline.track(at: end) {
+                    timeline.move(asset: asset, to: track)
+                }
+                timeline.needsDisplay = true
                 break
             }
         }
@@ -203,12 +217,27 @@ class TimelineView: NSView {
             ctx.fill(CGRect(x: .zero, y:y, width: bounds.width, height: timeline.trackHeight))
             
             if let asset = track.asset {
+                
+                let origin: NSPoint
+                if let id = dragId, let dragLoc = dragLoc, asset.id == id {
+                    // Asset is dragging
+                    let channel = floor(dragLoc.y / timeline.trackHeight)
+                    let offset = dragLoc.y - (channel * timeline.trackHeight)
+                    let y = max(CGFloat.zero,
+                                min(CGFloat(timeline.tracks.count - 1) * timeline.trackHeight,
+                                    dragLoc.y - offset))
+                    origin = NSPoint(x: dragLoc.x, y: y)
+                    
+                } else {
+                    origin = CGPoint(x: .zero, y: y)
+                }
+                
                 // Draw waveform
-                drawWaveform(asset: asset, track: track, timeline: timeline, origin: CGPoint(x: .zero, y: y), color: NSColor.timelineWaveColor.cgColor, to: ctx)
+                drawWaveform(asset: asset, track: track, timeline: timeline, origin: origin, color: NSColor.timelineWaveColor.cgColor, to: ctx)
                 
                 // Draw asset name
                 let frame = CGRect(x: CGFloat(2) + CGFloat(asset.startTime - timeline.visibleTimeRange.lowerBound) * oneSecWidth,
-                                   y: CGFloat(2) + y,
+                                   y: CGFloat(2) + origin.y,
                                    width: CGFloat(asset.duration) * oneSecWidth - CGFloat(4),
                                    height: timeline.trackHeight)
                 NSString(string: asset.name).draw(in: frame, withAttributes: attributes)
@@ -216,7 +245,7 @@ class TimelineView: NSView {
                 // Draw asset selection
                 if asset.isSelected {
                     let frame = CGRect(x: CGFloat(asset.startTime - timeline.visibleTimeRange.lowerBound) * oneSecWidth,
-                                       y: y + CGFloat(1),
+                                       y: origin.y + CGFloat(1),
                                        width: CGFloat(asset.duration) * oneSecWidth,
                                        height: timeline.trackHeight - CGFloat(2))
                     ctx.setStrokeColor(NSColor.selectionStrokeColor.cgColor)
