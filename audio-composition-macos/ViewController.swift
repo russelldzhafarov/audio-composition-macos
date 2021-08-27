@@ -334,7 +334,7 @@ class ViewController: NSViewController {
               let url = importPanel.url,
               let timeline = representedObject as? Timeline else { return }
         
-        timeline.importFile(at: url)
+        timeline.importFile(at: url, to: nil)
     }
 }
 
