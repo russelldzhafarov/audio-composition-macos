@@ -107,12 +107,12 @@ class OverlayView: NSView {
             ctx.strokePath()
             
             // Draw cursor handle
-            ctx.move(to: CGPoint(x: cursorPos - CGFloat(5), y: CGFloat(18)))
-            ctx.addLine(to: CGPoint(x: cursorPos + CGFloat(5), y: CGFloat(18)))
-            ctx.addLine(to: CGPoint(x: cursorPos + CGFloat(5), y: CGFloat(25)))
-            ctx.addLine(to: CGPoint(x: cursorPos, y: CGFloat(30)))
-            ctx.addLine(to: CGPoint(x: cursorPos - CGFloat(5), y: CGFloat(25)))
-            ctx.addLine(to: CGPoint(x: cursorPos - CGFloat(5), y: CGFloat(18)))
+            ctx.move(to: CGPoint(x: cursorPos - CGFloat(5), y: CGFloat(10)))
+            ctx.addLine(to: CGPoint(x: cursorPos + CGFloat(5), y: CGFloat(10)))
+            ctx.addLine(to: CGPoint(x: cursorPos + CGFloat(5), y: CGFloat(17)))
+            ctx.addLine(to: CGPoint(x: cursorPos, y: CGFloat(23)))
+            ctx.addLine(to: CGPoint(x: cursorPos - CGFloat(5), y: CGFloat(17)))
+            ctx.addLine(to: CGPoint(x: cursorPos - CGFloat(5), y: CGFloat(10)))
             ctx.closePath()
             ctx.setFillColor(NSColor.timelineCursorColor.cgColor)
             ctx.fillPath()
