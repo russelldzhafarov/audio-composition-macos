@@ -6,6 +6,7 @@
 //
 
 import AVFoundation
+import Cocoa
 import Combine
 
 class Timeline: ObservableObject {
@@ -68,6 +69,75 @@ class Timeline: ObservableObject {
     deinit {
         timer?.invalidate()
         timer = nil
+    }
+    
+    func cut() {
+        copy()
+        delete()
+    }
+    func copy() {
+        var assets: [AudioAsset] = []
+        for track in tracks {
+            for asset in track.assets {
+                if asset.isSelected { assets.append(asset) }
+            }
+        }
+        guard !assets.isEmpty else { return }
+        
+        do {
+            let codedData = try JSONEncoder().encode(assets)
+            let pasteboard = NSPasteboard.general
+            pasteboard.clearContents()
+            pasteboard.declareTypes([.audioAsset], owner: nil)
+            pasteboard.setData(codedData, forType: .audioAsset)
+            
+        } catch {
+            self.error = error
+        }
+    }
+    func paste() {
+        let pasteboard = NSPasteboard.general
+        guard let type = pasteboard.availableType(from: [.audioAsset]),
+              type == .audioAsset,
+              let data = pasteboard.data(forType: .audioAsset) else { return }
+        
+        do {
+            let assets = try JSONDecoder().decode([AudioAsset].self, from: data)
+            
+            tracks.last?.assets.append(contentsOf: assets)
+            
+            needsDisplay = true
+            
+            if playerState == .playing {
+                stop()
+                play()
+            }
+            
+        } catch {
+            self.error = error
+        }
+    }
+    func delete() {
+        var assets: [AudioAsset] = []
+        for track in tracks {
+            for asset in track.assets {
+                if asset.isSelected { assets.append(asset) }
+            }
+        }
+        guard !assets.isEmpty else { return }
+        
+        for asset in assets {
+            if let track = track(for: asset.id) {
+                track.assets.removeAll(where: { $0.id == asset.id })
+            }
+        }
+        
+        needsDisplay = true
+        
+        if playerState == .playing {
+            stop()
+            play()
+        }
     }
     
     func track(for assetId: UUID) -> AudioTrack? {

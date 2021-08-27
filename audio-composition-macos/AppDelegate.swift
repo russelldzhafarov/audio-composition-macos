@@ -15,6 +15,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 }
 
+extension NSPasteboard.PasteboardType {
+    static let audioAsset = NSPasteboard.PasteboardType("com.russelldzhafarov.audio-composition-macos.audioasset.pbtype")
+}
+
 class GridClipTableView: NSTableView {
     override func drawGrid(inClipRect clipRect: NSRect) {}
 }
