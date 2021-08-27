@@ -221,7 +221,7 @@ class Timeline: ObservableObject {
         seek(to: TimeInterval(0))
     }
     
-    func importFile(at url: URL) {
+    func importFile(at url: URL, to track: AudioTrack?) {
         state = .processing
         
         serviceQueue.addOperation { [weak self] in
@@ -233,12 +233,18 @@ class Timeline: ObservableObject {
                 guard let asset = try AudioAsset(url: url, startTime: .zero) else {
                     throw AppError.read
                 }
-                let track = AudioTrack(name: "Channel # \(strongSelf.tracks.count + 1)",
-                                       asset: asset)
-                // Mute track if solo enabled in another channel
-                track.isMuted = !strongSelf.tracks.filter{ $0.soloEnabled }.isEmpty
-                
-                strongSelf.tracks.append(track)
+                if let track = track {
+                    track.asset = asset
+                    strongSelf.needsDisplay = true
+                    
+                } else {
+                    let aTrack = AudioTrack(name: "Channel # \(strongSelf.tracks.count + 1)",
+                                           asset: asset)
+                    // Mute track if solo enabled in another channel
+                    aTrack.isMuted = !strongSelf.tracks.filter{ $0.soloEnabled }.isEmpty
+                    
+                    strongSelf.tracks.append(aTrack)
+                }
                 
             } catch {
                 strongSelf.error = error
