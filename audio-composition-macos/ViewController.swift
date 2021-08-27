@@ -330,13 +330,9 @@ class ViewController: NSViewController {
         
         timeline.export(to: url)
     }
-    @IBAction func importAction(_ sender: Any) {
-        let response = importPanel.runModal()
-        guard response == .OK,
-              let url = importPanel.url,
-              let timeline = representedObject as? Timeline else { return }
-        
-        timeline.importFile(at: url, to: nil)
+    @IBAction func actionAddChannel(_ sender: Any) {
+        guard let timeline = representedObject as? Timeline else { return }
+        timeline.addTrack(AudioTrack(id: UUID(), name: "Channel # \(timeline.tracks.count + 1)", assets: []))
     }
 }
 
