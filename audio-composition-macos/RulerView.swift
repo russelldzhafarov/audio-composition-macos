@@ -32,7 +32,7 @@ class RulerView: NSView {
             let endTime = timeline.visibleTimeRange.lowerBound + (timeline.visibleDur * Double(end.x) / Double(bounds.width))
             
             timeline.selectedTimeRange = nil
-            timeline.currentTime = endTime
+            timeline.currentTime = endTime.clamped(to: 0...timeline.duration)
             
             if nextEvent.type == .leftMouseUp {
                 timeline.seek(to: timeline.currentTime)
