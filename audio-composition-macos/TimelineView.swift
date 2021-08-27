@@ -33,14 +33,14 @@ class TimelineView: NSView {
         let loc = convert(event.locationInWindow, from: nil)
         let oneSecWidth = bounds.width / CGFloat(timeline.visibleDur)
         
-        var selectedId: UUID?
-        var trackId: UUID?
+        var selectedAsset: AudioAsset?
+        var selectedTrack: AudioTrack?
         var y = CGFloat.zero
         for track in timeline.tracks {
             let trackRect = CGRect(x: .zero, y: y, width: bounds.width, height: timeline.trackHeight)
             
             if NSPointInRect(loc, trackRect) {
-                trackId = track.id
+                selectedTrack = track
                 
                 for asset in track.assets {
                     let assetRect = CGRect(x: CGFloat(asset.startTime - timeline.visibleTimeRange.lowerBound) * oneSecWidth,
@@ -50,7 +50,7 @@ class TimelineView: NSView {
                     
                     if NSPointInRect(loc, assetRect) {
                         asset.isSelected = true
-                        selectedId = asset.id
+                        selectedAsset = asset
                         timeline.needsDisplay = true
                     }
                 }
@@ -61,36 +61,36 @@ class TimelineView: NSView {
             y += timeline.trackHeight
         }
         
-        if let selectedId = selectedId {
+        if let selectedAsset = selectedAsset {
             // show asset menu
             let menu = NSMenu()
             let menuItem = menu.insertItem(withTitle: "Remove track",
                                            action: #selector(removeSelectedAsset(_:)),
                                            keyEquivalent: "",
                                            at: 0)
-            menuItem.representedObject = selectedId
+            menuItem.representedObject = selectedAsset
             NSMenu.popUpContextMenu(menu, with: event, for: self)
             
         } else {
-            if let trackId = trackId {
+            if let selectedTrack = selectedTrack {
                 // show track menu
                 let menu = NSMenu()
                 let menuItem = menu.insertItem(withTitle: "Remove channel",
                                                action: #selector(removeSelectedTrack(_:)),
                                                keyEquivalent: "",
                                                at: 0)
-                menuItem.representedObject = trackId
+                menuItem.representedObject = selectedTrack
                 NSMenu.popUpContextMenu(menu, with: event, for: self)
             }
         }
     }
     @objc func removeSelectedAsset(_ sender: NSMenuItem) {
-        guard let assetId = sender.representedObject as? UUID else { return }
-        timeline?.removeAsset(withId: assetId)
+        guard let asset = sender.representedObject as? AudioAsset else { return }
+        timeline?.removeAsset(asset)
     }
     @objc func removeSelectedTrack(_ sender: NSMenuItem) {
-        guard let trackId = sender.representedObject as? UUID else { return }
-        timeline?.removeTrack(withId: trackId)
+        guard let track = sender.representedObject as? AudioTrack else { return }
+        timeline?.removeTrack(track)
     }
     override func scrollWheel(with event: NSEvent) {
         super.scrollWheel(with: event)
