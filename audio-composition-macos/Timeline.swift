@@ -70,6 +70,52 @@ class Timeline: ObservableObject {
         timer = nil
     }
     
+    func removeAsset(withId assetId: UUID) {
+        for track in tracks {
+            if let asset = track.asset, asset.id == assetId {
+                track.asset = nil
+                needsDisplay = true
+                break
+            }
+        }
+        
+        if playerState == .playing {
+            stop()
+            play()
+        }
+    }
+    func removeTrack(withId trackId: UUID) {
+        guard let idx = tracks.firstIndex(where: { $0.id == trackId }) else { return }
+        tracks.remove(at: idx)
+        
+        if playerState == .playing {
+            stop()
+            play()
+        }
+    }
+    
+    func move(asset: AudioAsset, to track: AudioTrack) {
+        let wasPlaying = playerState == .playing
+        if wasPlaying {
+            stop()
+        }
+        
+        // Remove asset from prev track
+        tracks.filter{ $0.asset?.id == asset.id }.forEach{ $0.asset = nil }
+        // Assign asset to new track
+        track.asset = asset
+        
+        if wasPlaying {
+            play()
+        }
+    }
+    
+    func track(at point: NSPoint) -> AudioTrack? {
+        let idx = Int(floor(point.y / trackHeight))
+        guard tracks.indices.contains(idx) else { return nil }
+        return tracks[idx]
+    }
+    
     func mute(track: AudioTrack) {
         let wasPlaying = playerState == .playing
         if wasPlaying {

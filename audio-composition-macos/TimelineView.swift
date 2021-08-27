@@ -83,23 +83,12 @@ class TimelineView: NSView {
         }
     }
     @objc func removeSelectedAsset(_ sender: NSMenuItem) {
-        guard let timeline = timeline,
-              let assetId = sender.representedObject as? UUID else { return }
-        
-        for track in timeline.tracks {
-            if let asset = track.asset, asset.id == assetId {
-                track.asset = nil
-                needsDisplay = true
-                break
-            }
-        }
+        guard let assetId = sender.representedObject as? UUID else { return }
+        timeline?.removeAsset(withId: assetId)
     }
     @objc func removeSelectedTrack(_ sender: NSMenuItem) {
-        guard let timeline = timeline,
-              let trackId = sender.representedObject as? UUID,
-              let idx = timeline.tracks.firstIndex(where: { $0.id == trackId }) else { return }
-        
-        timeline.tracks.remove(at: idx)
+        guard let trackId = sender.representedObject as? UUID else { return }
+        timeline?.removeTrack(withId: trackId)
     }
     override func scrollWheel(with event: NSEvent) {
         super.scrollWheel(with: event)
