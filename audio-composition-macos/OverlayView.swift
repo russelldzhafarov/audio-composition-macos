@@ -107,44 +107,15 @@ class OverlayView: NSView {
             ctx.strokePath()
             
             // Draw cursor handle
-            ctx.move(to: CGPoint(x: cursorPos - CGFloat(4),
-                                 y: CGFloat(22)))
-            ctx.addLine(to: CGPoint(x: cursorPos + CGFloat(4),
-                                    y: CGFloat(22)))
-            ctx.addLine(to: CGPoint(x: cursorPos,
-                                    y: CGFloat(30)))
-            ctx.addLine(to: CGPoint(x: cursorPos - CGFloat(4),
-                                    y: CGFloat(22)))
+            ctx.move(to: CGPoint(x: cursorPos - CGFloat(5), y: CGFloat(18)))
+            ctx.addLine(to: CGPoint(x: cursorPos + CGFloat(5), y: CGFloat(18)))
+            ctx.addLine(to: CGPoint(x: cursorPos + CGFloat(5), y: CGFloat(25)))
+            ctx.addLine(to: CGPoint(x: cursorPos, y: CGFloat(30)))
+            ctx.addLine(to: CGPoint(x: cursorPos - CGFloat(5), y: CGFloat(25)))
+            ctx.addLine(to: CGPoint(x: cursorPos - CGFloat(5), y: CGFloat(18)))
             ctx.closePath()
             ctx.setFillColor(NSColor.timelineCursorColor.cgColor)
             ctx.fillPath()
         }
-    }
-    
-    // MARK: - Drag & Drop
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        registerForDraggedTypes([.fileURL])
-    }
-    override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
-        guard sender.draggingPasteboard.canReadObject(forClasses: [NSURL.self],
-                                                      options: [.urlReadingContentsConformToTypes: Timeline.acceptableUTITypes]) else { return NSDragOperation() }
-        
-        timeline?.highlighted = true
-        
-        return .copy
-    }
-    override func draggingExited(_ sender: NSDraggingInfo?) {
-        timeline?.highlighted = false
-    }
-    override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
-        let pboard = sender.draggingPasteboard
-        guard pboard.types?.contains(.fileURL) == true,
-              let fileURL = NSURL(from: pboard) else { return false }
-        
-        timeline?.highlighted = false
-        timeline?.importFile(at: fileURL as URL)
-        
-        return true
     }
 }
