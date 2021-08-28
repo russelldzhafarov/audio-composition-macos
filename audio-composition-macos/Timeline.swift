@@ -74,6 +74,15 @@ class Timeline: ObservableObject {
         timer = nil
     }
     
+    func time(at loc: NSPoint, width: CGFloat) -> TimeInterval {
+        visibleTimeRange.lowerBound + (visibleDur * Double(loc.x) / Double(width))
+    }
+    
+    func loc(at time: TimeInterval, width: CGFloat) -> CGFloat {
+        let oneSecWidth = width / CGFloat(visibleDur)
+        return CGFloat((time - visibleTimeRange.lowerBound)) * oneSecWidth
+    }
+    
     func cut() {
         copy()
         delete()
@@ -232,7 +241,9 @@ class Timeline: ObservableObject {
     }
     
     func track(at point: NSPoint) -> AudioTrack? {
-        let idx = Int(floor(point.y / trackHeight))
+        var idx = Int(floor(point.y / trackHeight))
+        if idx < 0 { idx = 0 }
+        if idx > (tracks.count - 1) { idx = tracks.count - 1 }
         guard tracks.indices.contains(idx) else { return nil }
         return tracks[idx]
     }
