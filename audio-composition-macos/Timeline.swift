@@ -22,8 +22,15 @@ class Timeline: ObservableObject {
     enum State: String {
         case processing = "Processing...", ready = "Ready"
     }
-    enum AppError: Error {
+    enum AppError: LocalizedError {
         case read
+        
+        var errorDescription: String? {
+            switch self {
+            case .read:
+                return "Can't read the audio file."
+            }
+        }
     }
     enum PlayerState {
         case stopped, playing

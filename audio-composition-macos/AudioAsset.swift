@@ -23,7 +23,7 @@ class AudioAsset: Identifiable, Codable {
     var data: Data
     var startTime: TimeInterval
     
-    let buffer: AVAudioPCMBuffer?
+    let buffer: AVAudioPCMBuffer
     let amps: [Float]
     
     var isSelected = false
@@ -36,11 +36,14 @@ class AudioAsset: Identifiable, Codable {
         self.name = url.lastPathComponent
         self.startTime = startTime
         self.data = try Data(contentsOf: url)
-        self.buffer = try AVAudioPCMBuffer(url: url)
-        self.amps = buffer?.compressed() ?? []
+        guard let aBuffer = try AVAudioPCMBuffer(url: url) else {
+            throw Timeline.AppError.read
+        }
+        self.buffer = aBuffer
+        self.amps = aBuffer.compressed()
     }
     
-    init(id: UUID, trackId: UUID, name: String, data: Data, startTime: TimeInterval, buffer: AVAudioPCMBuffer?, amps: [Float]) {
+    init(id: UUID, trackId: UUID, name: String, data: Data, startTime: TimeInterval, buffer: AVAudioPCMBuffer, amps: [Float]) {
         self.id = id
         self.trackId = trackId
         self.name = name
@@ -60,18 +63,26 @@ class AudioAsset: Identifiable, Codable {
         
         let tempUrl = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(UUID().uuidString)
         try data.write(to: tempUrl)
-        buffer = try AVAudioPCMBuffer(url: tempUrl)
+        guard let aBuffer = try AVAudioPCMBuffer(url: tempUrl) else {
+            try FileManager.default.removeItem(at: tempUrl)
+            throw Timeline.AppError.read
+        }
+        
         try FileManager.default.removeItem(at: tempUrl)
         
-        amps = buffer?.compressed() ?? []
+        self.buffer = aBuffer
+        self.amps = aBuffer.compressed()
     }
     
-    var format: AVAudioFormat? {
-        buffer?.format
+    var timeRange: Range<TimeInterval> {
+        (startTime ..< (startTime + duration))
+    }
+    
+    var format: AVAudioFormat {
+        buffer.format
     }
     
     var duration: TimeInterval {
-        guard let buffer = buffer else { return .zero }
         return Double(buffer.frameLength) / buffer.format.sampleRate
     }
     
