@@ -9,7 +9,8 @@ import Cocoa
 
 class Document: NSDocument {
     
-    let timeline = Timeline(tracks: [], undoManager: nil)
+    let timeline = Timeline(tracks: [AudioTrack(id: UUID(), name: "Channel # 1", assets: [])],
+                            undoManager: nil)
     
     override init() {
         super.init()
@@ -27,7 +28,6 @@ class Document: NSDocument {
         self.addWindowController(windowController)
         
         timeline.undoManager = windowController.window?.undoManager
-        timeline.tracks = [AudioTrack(id: UUID(), name: "Channel # 1", assets: [])]
         
         windowController.contentViewController?.representedObject = timeline
     }

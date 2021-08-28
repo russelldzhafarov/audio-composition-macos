@@ -12,52 +12,67 @@ class AudioAsset: Identifiable, Codable {
     enum CodingKeys: String, CodingKey {
         case id
         case trackId
-        case url
+        case name
         case startTime
+        case data
     }
     
     var id: UUID
     var trackId: UUID
     
-    var url: URL
+    var data: Data
     var startTime: TimeInterval
-    let buffer: AVAudioPCMBuffer
+    
+    let buffer: AVAudioPCMBuffer?
     let amps: [Float]
     
     var isSelected = false
     
-    var name: String {
-        url.lastPathComponent
-    }
+    var name: String
     
-    init?(id: UUID, trackId: UUID, url: URL, startTime: TimeInterval) throws {
+    init(id: UUID, trackId: UUID, url: URL, startTime: TimeInterval) throws {
         self.id = id
         self.trackId = trackId
-        self.url = url
+        self.name = url.lastPathComponent
         self.startTime = startTime
-        
-        guard let buffer = try AVAudioPCMBuffer(url: url) else { return nil }
+        self.data = try Data(contentsOf: url)
+        self.buffer = try AVAudioPCMBuffer(url: url)
+        self.amps = buffer?.compressed() ?? []
+    }
+    
+    init(id: UUID, trackId: UUID, name: String, data: Data, startTime: TimeInterval, buffer: AVAudioPCMBuffer?, amps: [Float]) {
+        self.id = id
+        self.trackId = trackId
+        self.name = name
+        self.data = data
+        self.startTime = startTime
         self.buffer = buffer
-        self.amps = buffer.compressed()
+        self.amps = amps
     }
     
     required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         id = try values.decode(UUID.self, forKey: .id)
         trackId = try values.decode(UUID.self, forKey: .trackId)
-        url = try values.decode(URL.self, forKey: .url)
+        name = try values.decode(String.self, forKey: .name)
+        data = try values.decode(Data.self, forKey: .data)
         startTime = try values.decode(Double.self, forKey: .startTime)
         
-        self.buffer = try AVAudioPCMBuffer(url: url)!
-        self.amps = buffer.compressed()
+        let tempUrl = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(UUID().uuidString)
+        try data.write(to: tempUrl)
+        buffer = try AVAudioPCMBuffer(url: tempUrl)
+        try FileManager.default.removeItem(at: tempUrl)
+        
+        amps = buffer?.compressed() ?? []
     }
     
-    var format: AVAudioFormat {
-        buffer.format
+    var format: AVAudioFormat? {
+        buffer?.format
     }
     
     var duration: TimeInterval {
-        Double(buffer.frameLength) / buffer.format.sampleRate
+        guard let buffer = buffer else { return .zero }
+        return Double(buffer.frameLength) / buffer.format.sampleRate
     }
     
     func power(at time: TimeInterval) -> Float {

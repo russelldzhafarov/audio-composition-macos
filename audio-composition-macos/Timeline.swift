@@ -182,7 +182,7 @@ class Timeline: ObservableObject {
         }
     }
     func insertAssets(_ assets: [AudioAsset]) {
-        let updated = assets.compactMap{ try? AudioAsset(id: UUID(), trackId: $0.trackId, url: $0.url, startTime: $0.startTime) }
+        let updated = assets.compactMap{ AudioAsset(id: UUID(), trackId: $0.trackId, name: $0.name, data: $0.data, startTime: $0.startTime, buffer: $0.buffer, amps: $0.amps) }
         undoManager?.registerUndo(withTarget: self) { target in
             target.removeAssets(updated)
         }
@@ -363,16 +363,12 @@ class Timeline: ObservableObject {
             }
             do {
                 if let track = track {
-                    guard let asset = try AudioAsset(id: UUID(), trackId: track.id, url: url, startTime: startTime) else {
-                        throw AppError.read
-                    }
+                    let asset = try AudioAsset(id: UUID(), trackId: track.id, url: url, startTime: startTime)
                     
                     strongSelf.insertAssets([asset])
                     
                 } else {
-                    guard let asset = try AudioAsset(id: UUID(), trackId: UUID(), url: url, startTime: startTime) else {
-                        throw AppError.read
-                    }
+                    let asset = try AudioAsset(id: UUID(), trackId: UUID(), url: url, startTime: startTime)
                     
                     strongSelf.insertAssets([asset])
                     
