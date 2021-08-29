@@ -157,7 +157,6 @@ class TimelineView: NSView {
               !timeline.isEmpty else { return }
         
         let start = convert(event.locationInWindow, from: nil)
-        let startTime = timeline.time(at: start, width: bounds.width)
         
         let assetStartTime = asset.startTime
         
@@ -170,35 +169,12 @@ class TimelineView: NSView {
             let end = convert(nextEvent.locationInWindow, from: nil)
             dragLoc = end
             
-            // Limits
-            var stops: [TimeInterval] = []
-            if let track = timeline.track(at: end) {
-                for theAsset in track.assets {
-                    if theAsset.id == asset.id { continue }
-                    
-                    stops.append(theAsset.startTime)
-                    stops.append(theAsset.startTime + theAsset.duration)
-                }
-            }
-            
-            var minTime = TimeInterval.zero
-            var maxTime = timeline.duration
-            for stop in stops {
-                if stop >= startTime {
-                    maxTime = min(maxTime, stop)
-                }
-                if stop <= startTime {
-                    minTime = max(minTime, stop)
-                }
-            }
-            
-            
             if Int(start.x) != Int(end.x) {
                 let oneSecWidth = bounds.width / CGFloat(timeline.visibleDur)
                 let change = TimeInterval((end.x - start.x) / oneSecWidth)
                 
-                asset.startTime = TimeInterval(max(minTime,
-                                                   min(maxTime - asset.duration, (assetStartTime + change))))
+                asset.startTime = TimeInterval(max(TimeInterval.zero,
+                                                   (assetStartTime + change)))
                 
                 timeline.needsDisplay = true
             }
@@ -207,6 +183,15 @@ class TimelineView: NSView {
                 dragId = nil
                 dragLoc = nil
                 if let track = timeline.track(at: end) {
+                    
+                    for trackAsset in track.assets {
+                        if trackAsset.id == asset.id { continue }
+                        
+                        if trackAsset.timeRange.overlaps(asset.timeRange) {
+                            asset.startTime = (trackAsset.startTime + trackAsset.duration)
+                        }
+                    }
+                    
                     timeline.move(asset: asset, to: track)
                 }
                 timeline.needsDisplay = true

@@ -197,6 +197,14 @@ class Timeline: ObservableObject {
         for asset in updated {
             if let track = tracks.first(where: { $0.id == asset.trackId }) {
                 track.assets.append(asset)
+                
+                for trackAsset in track.assets {
+                    if trackAsset.id == asset.id { continue }
+                    
+                    if trackAsset.timeRange.overlaps(asset.timeRange) {
+                        asset.startTime = (trackAsset.startTime + trackAsset.duration)
+                    }
+                }
             }
         }
         
