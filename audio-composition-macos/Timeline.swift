@@ -160,21 +160,14 @@ class Timeline: ObservableObject {
             target.removeTrack(track)
         }
         
+        // Mute track if solo enabled in another channel
+        track.isMuted = !tracks.filter{ $0.soloEnabled }.isEmpty
+        
         tracks.append(track)
     }
     
     func addNewTrack() {
-        let track = AudioTrack(id: UUID(),
-                               name: "Channel # \(tracks.count + 1)",
-                               assets: [])
-        // Mute track if solo enabled in another channel
-        track.isMuted = !tracks.filter{ $0.soloEnabled }.isEmpty
-        
-        undoManager?.registerUndo(withTarget: self) { target in
-            target.removeTrack(track)
-        }
-        
-        tracks.append(track)
+        addTrack(AudioTrack(id: UUID(), name: "Channel # \(tracks.count + 1)", assets: []))
     }
     func removeTrack(_ track: AudioTrack) {
         undoManager?.registerUndo(withTarget: self) { target in
