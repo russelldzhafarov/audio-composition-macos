@@ -179,14 +179,26 @@ class ViewController: NSViewController {
             timeline.$state
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] newValue in
-                    let isEnabled = newValue == .ready
-                    self?.exportButton.isEnabled = isEnabled
-                    self?.playButton.isEnabled = isEnabled
-                    self?.forwardButton.isEnabled = isEnabled
-                    self?.forwardEndButton.isEnabled = isEnabled
-                    self?.backwardButton.isEnabled = isEnabled
-                    self?.backwardEndButton.isEnabled = isEnabled
-                    self?.statusLabel.stringValue = newValue.rawValue
+                    guard let strongSelf = self else { return }
+                    
+                    strongSelf.statusLabel.stringValue = newValue.rawValue
+                    
+                    guard let window = strongSelf.view.window else { return }
+                    
+                    if newValue == .processing {
+                        let overlayWindow = NSWindow(contentRect: window.frame,
+                                              styleMask: .borderless,
+                                              backing: .buffered,
+                                              defer: false)
+                        overlayWindow.backgroundColor = NSColor.windowBackgroundColor
+                        overlayWindow.isOpaque = false
+                        overlayWindow.alphaValue = CGFloat(0.5)
+                        
+                        window.addChildWindow(overlayWindow, ordered: .above)
+                        
+                    } else {
+                        window.childWindows?.forEach{ window.removeChildWindow($0); $0.orderOut(nil) }
+                    }
                 }
                 .store(in: &cancellables)
             
