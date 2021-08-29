@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		906B8C2026DB640200C94269 /* ProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 906B8C1F26DB640200C94269 /* ProgressViewController.swift */; };
 		90799D1326D2898F009B327E /* AudioExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90799D1226D2898F009B327E /* AudioExporter.swift */; };
 		907E2CB126D11309007EBFD1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 907E2CB026D11309007EBFD1 /* AppDelegate.swift */; };
 		907E2CB326D11309007EBFD1 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 907E2CB226D11309007EBFD1 /* ViewController.swift */; };
@@ -24,6 +25,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		906B8C1F26DB640200C94269 /* ProgressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressViewController.swift; sourceTree = "<group>"; };
 		90799D1226D2898F009B327E /* AudioExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioExporter.swift; sourceTree = "<group>"; };
 		907E2CAD26D11309007EBFD1 /* audio-composition-macos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "audio-composition-macos.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		907E2CB026D11309007EBFD1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -75,6 +77,7 @@
 			children = (
 				907E2CB026D11309007EBFD1 /* AppDelegate.swift */,
 				907E2CB226D11309007EBFD1 /* ViewController.swift */,
+				906B8C1F26DB640200C94269 /* ProgressViewController.swift */,
 				907E2CD126D11732007EBFD1 /* WindowController.swift */,
 				907E2CB426D11309007EBFD1 /* Document.swift */,
 				907E2CCD26D114D2007EBFD1 /* Timeline.swift */,
@@ -166,6 +169,7 @@
 				907E2CCE26D114D2007EBFD1 /* Timeline.swift in Sources */,
 				907E2CC826D11456007EBFD1 /* RulerView.swift in Sources */,
 				907E2CD726D24FC2007EBFD1 /* AVAudioPCMBuffer.swift in Sources */,
+				906B8C2026DB640200C94269 /* ProgressViewController.swift in Sources */,
 				907E2CB126D11309007EBFD1 /* AppDelegate.swift in Sources */,
 				907E2CCB26D11463007EBFD1 /* OverlayView.swift in Sources */,
 				907E2CDA26D25159007EBFD1 /* AudioTrack.swift in Sources */,

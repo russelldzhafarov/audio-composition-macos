@@ -820,7 +820,7 @@
                                                                             <constraint firstItem="HtY-4d-29S" firstAttribute="leading" secondItem="Pie-fN-xHA" secondAttribute="trailing" id="zdA-mN-u5G"/>
                                                                         </constraints>
                                                                     </view>
-                                                                    <color key="fillColor" red="0.15294117647058825" green="0.16470588235294117" blue="0.21176470588235294" alpha="1" colorSpace="deviceRGB"/>
+                                                                    <color key="fillColor" red="0.15241202710000001" green="0.16375178100000001" blue="0.2135320902" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 </box>
                                                             </subviews>
                                                             <constraints>
@@ -930,6 +930,49 @@
                 <customObject id="2Tp-Fl-jBw" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="75" y="853"/>
+        </scene>
+        <!--Progress View Controller-->
+        <scene sceneID="DV9-zU-MVi">
+            <objects>
+                <viewController storyboardIdentifier="ProgressViewController" id="Vrb-1X-0e7" customClass="ProgressViewController" customModule="audio_composition_macos" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" wantsLayer="YES" id="zlS-9y-3yv">
+                        <rect key="frame" x="0.0" y="0.0" width="480" height="300"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <box boxType="custom" borderType="none" borderWidth="0.0" cornerRadius="8" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="p1c-Ve-Jgm">
+                                <rect key="frame" x="196" y="106" width="88" height="88"/>
+                                <view key="contentView" id="5Cd-YU-2bv">
+                                    <rect key="frame" x="0.0" y="0.0" width="88" height="88"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <progressIndicator wantsLayer="YES" maxValue="100" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="T7i-mt-cZW">
+                                            <rect key="frame" x="28" y="28" width="32" height="32"/>
+                                        </progressIndicator>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="T7i-mt-cZW" firstAttribute="centerX" secondItem="5Cd-YU-2bv" secondAttribute="centerX" id="Req-JT-joL"/>
+                                        <constraint firstItem="T7i-mt-cZW" firstAttribute="centerY" secondItem="5Cd-YU-2bv" secondAttribute="centerY" id="vcB-gF-7dt"/>
+                                    </constraints>
+                                </view>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="88" id="Ksr-xd-gNa"/>
+                                    <constraint firstAttribute="width" constant="88" id="Q1W-do-cHE"/>
+                                </constraints>
+                                <color key="fillColor" red="0.19215686274509802" green="0.20392156862745098" blue="0.25098039215686274" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </box>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="p1c-Ve-Jgm" firstAttribute="centerX" secondItem="zlS-9y-3yv" secondAttribute="centerX" id="KWz-Ey-RbK"/>
+                            <constraint firstItem="p1c-Ve-Jgm" firstAttribute="centerY" secondItem="zlS-9y-3yv" secondAttribute="centerY" id="mPm-rh-l2J"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="progressIndicator" destination="T7i-mt-cZW" id="T8g-bt-pNE"/>
+                    </connections>
+                </viewController>
+                <customObject id="4bB-Mc-55Z" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="75" y="1229"/>
         </scene>
     </scenes>
     <resources>

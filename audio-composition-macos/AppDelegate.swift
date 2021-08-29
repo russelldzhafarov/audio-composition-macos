@@ -15,6 +15,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 }
 
+extension NSStoryboard.Name {
+    static let main = NSStoryboard.Name("Main")
+}
+extension NSStoryboard.SceneIdentifier {
+    static let documentWindowController = NSStoryboard.SceneIdentifier("Document Window Controller")
+    static let progressViewController = NSStoryboard.SceneIdentifier("ProgressViewController")
+}
 extension NSPasteboard.PasteboardType {
     static let audioAsset = NSPasteboard.PasteboardType("com.russelldzhafarov.audio-composition-macos.audioasset.pbtype")
 }

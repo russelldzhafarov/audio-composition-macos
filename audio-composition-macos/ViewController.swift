@@ -186,13 +186,19 @@ class ViewController: NSViewController {
                     guard let window = strongSelf.view.window else { return }
                     
                     if newValue == .processing {
+                        let storyboard = NSStoryboard(name: .main, bundle: nil)
+                        let progressViewController = storyboard.instantiateController(withIdentifier: .progressViewController) as! ProgressViewController
+                        
+                        progressViewController.view.frame = NSRect(origin: .zero, size: window.frame.size)
+                        
                         let overlayWindow = NSWindow(contentRect: window.frame,
-                                              styleMask: .borderless,
-                                              backing: .buffered,
-                                              defer: false)
-                        overlayWindow.backgroundColor = NSColor.windowBackgroundColor
+                                                     styleMask: .borderless,
+                                                     backing: .buffered,
+                                                     defer: false)
+                        
+                        overlayWindow.contentViewController = progressViewController
+                        overlayWindow.backgroundColor = .clear
                         overlayWindow.isOpaque = false
-                        overlayWindow.alphaValue = CGFloat(0.5)
                         
                         window.addChildWindow(overlayWindow, ordered: .above)
                         
@@ -213,9 +219,9 @@ class ViewController: NSViewController {
                         origin: strongSelf.timelineView.frame.origin,
                         size: CGSize(width: strongSelf.timelineScrollView.documentVisibleRect.width - (strongSelf.timelineScrollView.verticalRulerView?.bounds.width ?? .zero),
                                      height: height))
-
+                    
                     strongSelf.timelineView.needsDisplay = true
-
+                    
                     strongSelf.tableView.reloadData()
                     
                     strongSelf.exportButton.isEnabled = !newValue.isEmpty
