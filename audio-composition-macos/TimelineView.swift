@@ -107,7 +107,7 @@ class TimelineView: NSView {
                   CGFloat(timeline.visibleTimeRange.lowerBound)) * -1
         
         if deltaPixels != 0 {
-            timeline.visibleTimeRange = timeline.visibleTimeRange.lowerBound + Double(deltaPixels) ..< timeline.visibleTimeRange.upperBound + Double(deltaPixels)
+            timeline.visibleTimeRange = timeline.visibleTimeRange.lowerBound + Double(deltaPixels) ... timeline.visibleTimeRange.upperBound + Double(deltaPixels)
         }
     }
     override func mouseDown(with event: NSEvent) {

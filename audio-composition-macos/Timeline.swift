@@ -14,23 +14,13 @@ class Timeline: ObservableObject {
     let trackHeight = CGFloat(60)
     
     static let acceptableUTITypes = [
-        "public.mp3",
-        "com.apple.m4a-audio",
-        "com.microsoft.waveform-audio"
+        AVFileType.mp3.rawValue,
+        AVFileType.m4a.rawValue,
+        AVFileType.wav.rawValue
     ]
     
     enum State: String {
         case processing = "Processing...", ready = "Ready"
-    }
-    enum AppError: LocalizedError {
-        case read
-        
-        var errorDescription: String? {
-            switch self {
-            case .read:
-                return "Can't read the audio file."
-            }
-        }
     }
     enum PlayerState {
         case stopped, playing
@@ -40,9 +30,9 @@ class Timeline: ObservableObject {
     private let audioExporter = AudioExporter()
     
     @Published var tracks: [AudioTrack] = []
-    @Published var visibleTimeRange: Range<TimeInterval> = 0.0 ..< 60.0
-    @Published var selectedTimeRange: Range<TimeInterval>?
-    @Published var currentTime: TimeInterval = 0.0
+    @Published var visibleTimeRange: ClosedRange<TimeInterval> = .zero ... 60.0
+    @Published var selectedTimeRange: ClosedRange<TimeInterval>?
+    @Published var currentTime: TimeInterval = .zero
     @Published var highlighted = false
     @Published var state: State = .ready
     @Published var playerState: PlayerState = .stopped
@@ -182,7 +172,7 @@ class Timeline: ObservableObject {
         }
     }
     func insertAssets(_ assets: [AudioAsset]) {
-        let updated = assets.compactMap{ AudioAsset(id: UUID(), trackId: $0.trackId, name: $0.name, data: $0.data, startTime: $0.startTime, buffer: $0.buffer, amps: $0.amps) }
+        let updated = assets.compactMap{ AudioAsset(id: UUID(), trackId: $0.trackId, url: $0.url, startTime: $0.startTime, buffer: $0.buffer, samples: $0.samples) }
         undoManager?.registerUndo(withTarget: self) { target in
             target.removeAssets(updated)
         }
@@ -369,28 +359,23 @@ class Timeline: ObservableObject {
             defer {
                 strongSelf.state = .ready
             }
-            do {
-                if let track = track {
-                    let asset = try AudioAsset(id: UUID(), trackId: track.id, url: url, startTime: startTime)
-                    
-                    strongSelf.insertAssets([asset])
-                    
-                } else {
-                    let asset = try AudioAsset(id: UUID(), trackId: UUID(), url: url, startTime: startTime)
-                    
-                    strongSelf.insertAssets([asset])
-                    
-                    let aTrack = AudioTrack(id: UUID(),
-                                            name: "Channel # \(strongSelf.tracks.count + 1)",
-                                            assets: [asset])
-                    // Mute track if solo enabled in another channel
-                    aTrack.isMuted = !strongSelf.tracks.filter{ $0.soloEnabled }.isEmpty
-                    
-                    strongSelf.addTrack(aTrack)
-                }
+            if let track = track {
+                let asset = AudioAsset(id: UUID(), trackId: track.id, url: url, startTime: startTime)
                 
-            } catch {
-                strongSelf.error = error
+                strongSelf.insertAssets([asset])
+                
+            } else {
+                let asset = AudioAsset(id: UUID(), trackId: UUID(), url: url, startTime: startTime)
+                
+                strongSelf.insertAssets([asset])
+                
+                let aTrack = AudioTrack(id: UUID(),
+                                        name: "Channel # \(strongSelf.tracks.count + 1)",
+                                        assets: [asset])
+                // Mute track if solo enabled in another channel
+                aTrack.isMuted = !strongSelf.tracks.filter{ $0.soloEnabled }.isEmpty
+                
+                strongSelf.addTrack(aTrack)
             }
         }
     }
@@ -399,17 +384,22 @@ class Timeline: ObservableObject {
         let format = audioEngine.mainMixerNode.outputFormat(forBus: AVAudioNodeBus(0))
         var settings = format.settings
         settings[AVFormatIDKey] = kAudioFormatMPEG4AAC
-        let fileLength = AVAudioFramePosition((duration - TimeInterval(60)) * format.sampleRate)
+        let fileLength = AVAudioFramePosition((duration - 60.0) * format.sampleRate)
         
         state = .processing
         serviceQueue.addOperation { [weak self] in
             guard let strongSelf = self else { return }
-            strongSelf.audioExporter.export(timeline: strongSelf,
-                                            engine: strongSelf.audioEngine,
-                                            format: format,
-                                            settings: settings,
-                                            fileLength: fileLength,
-                                            outputURL: url)
+            do {
+                try strongSelf.audioExporter.export(timeline: strongSelf,
+                                                engine: strongSelf.audioEngine,
+                                                format: format,
+                                                settings: settings,
+                                                fileLength: fileLength,
+                                                outputURL: url)
+            } catch {
+                strongSelf.error = error
+            }
+            
             strongSelf.state = .ready
         }
     }

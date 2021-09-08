@@ -34,7 +34,7 @@ class OverlayView: NSView {
         
         guard startTime < endTime else { return }
         
-        timeline.visibleTimeRange = (startTime ..< endTime).clamped(to: 0 ..< timeline.duration)
+        timeline.visibleTimeRange = (startTime ... endTime).clamped(to: .zero ... timeline.duration)
     }
     
     // MARK: - Drawing
