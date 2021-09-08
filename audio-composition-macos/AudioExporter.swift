@@ -8,7 +8,7 @@
 import AVFoundation
 
 class AudioExporter {
-    func export(timeline: Timeline, engine: AVAudioEngine, format: AVAudioFormat, settings: [String: Any], fileLength: AVAudioFramePosition, outputURL: URL) {
+    func export(timeline: Timeline, engine: AVAudioEngine, format: AVAudioFormat, settings: [String: Any], fileLength: AVAudioFramePosition, outputURL: URL) throws {
         
         for track in timeline.tracks {
             engine.attach(track.player)
@@ -26,7 +26,9 @@ class AudioExporter {
                                                  format: format,
                                                  maximumFrameCount: maxFrames)
         } catch {
-            fatalError("Enabling manual rendering mode failed: \(error).")
+            throw NSError(domain: Bundle.main.bundleIdentifier ?? "",
+                          code: 0,
+                          userInfo: [NSLocalizedDescriptionKey: "Enabling manual rendering mode failed: \(error)."])
         }
         
         do {
@@ -35,7 +37,9 @@ class AudioExporter {
             timeline.tracks.forEach{ $0.play() }
             
         } catch {
-            fatalError("Unable to start audio engine: \(error).")
+            throw NSError(domain: Bundle.main.bundleIdentifier ?? "",
+                          code: 0,
+                          userInfo: [NSLocalizedDescriptionKey: "Unable to start audio engine: \(error)."])
         }
         
         // The output buffer to which the engine renders the processed data.
@@ -47,7 +51,9 @@ class AudioExporter {
             outputFile = try AVAudioFile(forWriting: outputURL,
                                          settings: settings)
         } catch {
-            fatalError("Unable to open output audio file: \(error).")
+            throw NSError(domain: Bundle.main.bundleIdentifier ?? "",
+                          code: 0,
+                          userInfo: [NSLocalizedDescriptionKey: "Unable to open output audio file: \(error)."])
         }
         
         while engine.manualRenderingSampleTime < fileLength {
@@ -73,11 +79,18 @@ class AudioExporter {
                     
                 case .error:
                     // An error occurred while rendering the audio.
-                    fatalError("The manual rendering failed.")
+                    throw NSError(domain: Bundle.main.bundleIdentifier ?? "",
+                                  code: 0,
+                                  userInfo: [NSLocalizedDescriptionKey: "The manual rendering failed."])
+                    
+                @unknown default:
+                    break
                 }
                 
             } catch {
-                fatalError("The manual rendering failed: \(error).")
+                throw NSError(domain: Bundle.main.bundleIdentifier ?? "",
+                              code: 0,
+                              userInfo: [NSLocalizedDescriptionKey: "The manual rendering failed: \(error)."])
             }
         }
         
