@@ -66,22 +66,23 @@ class AudioTrack: NSObject, Identifiable, Codable {
     public func schedule(at currentTime: TimeInterval) {
         guard !isMuted else { return }
         for asset in assets {
-            guard currentTime < (asset.startTime + asset.duration) else {continue}
+            guard currentTime < (asset.startTime + asset.duration),
+                  let buffer = asset.buffer else {continue}
             
             let time = AVAudioTime(
-                sampleTime: AVAudioFramePosition((asset.startTime - currentTime) * asset.buffer.format.sampleRate),
-                atRate: asset.buffer.format.sampleRate)
+                sampleTime: AVAudioFramePosition((asset.startTime - currentTime) * buffer.format.sampleRate),
+                atRate: buffer.format.sampleRate)
             
             if currentTime <= asset.startTime {
-                player.scheduleBuffer(asset.buffer, at: time)
+                player.scheduleBuffer(buffer, at: time)
             }
             
             if currentTime > asset.startTime && currentTime < (asset.startTime + asset.duration) {
                 
                 let from = currentTime - asset.startTime
-                let to = Double(asset.buffer.frameCapacity) / asset.buffer.format.sampleRate
+                let to = Double(buffer.frameCapacity) / buffer.format.sampleRate
                 
-                if let segment = asset.buffer.extract(from: from, to: to) {
+                if let segment = buffer.extract(from: from, to: to) {
                     player.scheduleBuffer(segment, at: nil)
                 }
             }
