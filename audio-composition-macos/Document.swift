@@ -7,6 +7,14 @@
 
 import Cocoa
 
+extension NSStoryboard.Name {
+    static let main = NSStoryboard.Name("Main")
+}
+extension NSStoryboard.SceneIdentifier {
+    static let documentWindowController = NSStoryboard.SceneIdentifier("Document Window Controller")
+    static let progressViewController = NSStoryboard.SceneIdentifier("ProgressViewController")
+}
+
 class Document: NSDocument {
     
     let timeline = Timeline(tracks: [AudioTrack(id: UUID(), name: "Channel # 1", assets: [])],

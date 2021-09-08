@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  EditorViewController.swift
 //  audio-composition-macos
 //
 //  Created by russell.dzhafarov@gmail.com on 21.08.2021.
@@ -8,7 +8,12 @@
 import Cocoa
 import Combine
 
-class ViewController: NSViewController {
+extension NSImage.Name {
+    static let play = NSImage.Name("play.fill")
+    static let pause = NSImage.Name("pause.fill")
+}
+
+class EditorViewController: NSViewController {
     
     let exportPanel: NSSavePanel = {
         let panel = NSSavePanel()
@@ -354,7 +359,7 @@ class ViewController: NSViewController {
     }
 }
 
-extension ViewController: NSTableViewDataSource {
+extension EditorViewController: NSTableViewDataSource {
     func numberOfRows(in tableView: NSTableView) -> Int {
         guard let timeline = representedObject as? Timeline else { return 0 }
         return timeline.tracks.count

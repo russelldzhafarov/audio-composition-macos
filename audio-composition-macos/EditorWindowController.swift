@@ -1,5 +1,5 @@
 //
-//  WindowController.swift
+//  EditorWindowController.swift
 //  audio-composition-macos
 //
 //  Created by russell.dzhafarov@gmail.com on 21.08.2021.
@@ -7,7 +7,11 @@
 
 import Cocoa
 
-class WindowController: NSWindowController {
+extension NSPasteboard.PasteboardType {
+    static let audioAsset = NSPasteboard.PasteboardType("com.russelldzhafarov.audio-composition-macos.audioasset.pbtype")
+}
+
+class EditorWindowController: NSWindowController {
     
     var timeline: Timeline? {
         (document as? Document)?.timeline
@@ -38,7 +42,7 @@ class WindowController: NSWindowController {
     }
 }
 
-extension WindowController: NSMenuItemValidation {
+extension EditorWindowController: NSMenuItemValidation {
     func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
         switch menuItem.action {
         case #selector(cut(_:)):
