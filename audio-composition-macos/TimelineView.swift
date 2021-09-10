@@ -9,8 +9,8 @@ import Cocoa
 
 class TimelineView: NSView {
     
-    var timeline: Timeline? {
-        (window?.windowController?.document as? Document)?.timeline
+    var document: Document? {
+        window?.windowController?.document as? Document
     }
     
     override var isFlipped: Bool { true }
@@ -21,7 +21,7 @@ class TimelineView: NSView {
     
     // MARK: - Events
     override func rightMouseDown(with event: NSEvent) {
-        guard let timeline = timeline,
+        guard let timeline = document?.timeline,
               !timeline.isEmpty else { return }
         
         // Clear selection
@@ -86,16 +86,16 @@ class TimelineView: NSView {
     }
     @objc func removeSelectedAsset(_ sender: NSMenuItem) {
         guard let asset = sender.representedObject as? AudioAsset else { return }
-        timeline?.removeAsset(asset)
+        document?.timeline.removeAsset(asset)
     }
     @objc func removeSelectedTrack(_ sender: NSMenuItem) {
         guard let track = sender.representedObject as? AudioTrack else { return }
-        timeline?.removeTrack(track)
+        document?.timeline.removeTrack(track)
     }
     override func scrollWheel(with event: NSEvent) {
         super.scrollWheel(with: event)
         
-        guard let timeline = timeline else { return }
+        guard let timeline = document?.timeline else { return }
         
         let duration = timeline.visibleDur
         let secPerPx = CGFloat(duration) / bounds.width
@@ -111,7 +111,7 @@ class TimelineView: NSView {
         }
     }
     override func mouseDown(with event: NSEvent) {
-        guard let timeline = timeline,
+        guard let timeline = document?.timeline,
               !timeline.isEmpty else { return }
         
         // Clear selection
@@ -153,7 +153,7 @@ class TimelineView: NSView {
     }
     
     func move(asset: AudioAsset, with event: NSEvent) {
-        guard let timeline = timeline,
+        guard let timeline = document?.timeline,
               !timeline.isEmpty else { return }
         
         let start = convert(event.locationInWindow, from: nil)
@@ -186,10 +186,6 @@ class TimelineView: NSView {
                     
                     for trackAsset in track.assets {
                         if trackAsset.id == asset.id { continue }
-                        
-                        if trackAsset.timeRange.overlaps(asset.timeRange) {
-                            asset.startTime = (trackAsset.startTime + trackAsset.duration)
-                        }
                     }
                     
                     timeline.move(asset: asset, to: track)
@@ -202,7 +198,7 @@ class TimelineView: NSView {
     
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
-        guard let timeline = timeline,
+        guard let timeline = document?.timeline,
               let ctx = NSGraphicsContext.current?.cgContext else { return }
         
         // Asset label attributed
@@ -388,15 +384,15 @@ class TimelineView: NSView {
         guard sender.draggingPasteboard.canReadObject(forClasses: [NSURL.self],
                                                       options: [.urlReadingContentsConformToTypes: Timeline.acceptableUTITypes]) else { return NSDragOperation() }
         
-        timeline?.highlighted = true
+        document?.timeline.highlighted = true
         
         return .copy
     }
     override func draggingExited(_ sender: NSDraggingInfo?) {
-        timeline?.highlighted = false
+        document?.timeline.highlighted = false
     }
     override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
-        guard let timeline = timeline else { return false }
+        guard let timeline = document?.timeline else { return false }
         
         let pboard = sender.draggingPasteboard
         guard pboard.types?.contains(.fileURL) == true,
