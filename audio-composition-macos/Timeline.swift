@@ -172,7 +172,7 @@ class Timeline: ObservableObject {
         }
     }
     func insertAssets(_ assets: [AudioAsset]) {
-        let updated = assets.compactMap{ AudioAsset(id: UUID(), trackId: $0.trackId, url: $0.url, startTime: $0.startTime, buffer: $0.buffer, samples: $0.samples) }
+        let updated = assets.compactMap{ AudioAsset(id: UUID(), fileId: $0.fileId, trackId: $0.trackId, url: $0.url, startTime: $0.startTime, buffer: $0.buffer, samples: $0.samples) }
         undoManager?.registerUndo(withTarget: self) { target in
             target.removeAssets(updated)
         }
@@ -183,10 +183,6 @@ class Timeline: ObservableObject {
                 
                 for trackAsset in track.assets {
                     if trackAsset.id == asset.id { continue }
-                    
-                    if trackAsset.timeRange.overlaps(asset.timeRange) {
-                        asset.startTime = (trackAsset.startTime + trackAsset.duration)
-                    }
                 }
             }
         }
@@ -359,15 +355,23 @@ class Timeline: ObservableObject {
             defer {
                 strongSelf.state = .ready
             }
+            
+            guard let buffer = try? AVAudioPCMBuffer(url: url) else {
+                self?.error = AVError(.unknown)
+                return
+            }
+            
+            let samples = buffer.compressed()
+            
+            let fileId = UUID()
+            
             if let track = track {
-                let asset = AudioAsset(id: UUID(), trackId: track.id, url: url, startTime: startTime)
+                let asset = AudioAsset(id: UUID(), fileId: fileId, trackId: track.id, url: url, startTime: startTime, buffer: buffer, samples: samples)
                 
                 strongSelf.insertAssets([asset])
                 
             } else {
-                let asset = AudioAsset(id: UUID(), trackId: UUID(), url: url, startTime: startTime)
-                
-                strongSelf.insertAssets([asset])
+                let asset = AudioAsset(id: UUID(), fileId: fileId, trackId: UUID(), url: url, startTime: startTime, buffer: buffer, samples: samples)
                 
                 let aTrack = AudioTrack(id: UUID(),
                                         name: "Channel # \(strongSelf.tracks.count + 1)",
@@ -376,6 +380,8 @@ class Timeline: ObservableObject {
                 aTrack.isMuted = !strongSelf.tracks.filter{ $0.soloEnabled }.isEmpty
                 
                 strongSelf.addTrack(aTrack)
+                
+                strongSelf.insertAssets([asset])
             }
         }
     }
