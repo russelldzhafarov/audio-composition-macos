@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		906B8C2026DB640200C94269 /* ProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 906B8C1F26DB640200C94269 /* ProgressViewController.swift */; };
+		9070460526EB493200836C9C /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9070460426EB493200836C9C /* Data.swift */; };
 		90799D1326D2898F009B327E /* AudioExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90799D1226D2898F009B327E /* AudioExporter.swift */; };
 		907E2CB126D11309007EBFD1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 907E2CB026D11309007EBFD1 /* AppDelegate.swift */; };
 		907E2CB326D11309007EBFD1 /* EditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 907E2CB226D11309007EBFD1 /* EditorViewController.swift */; };
@@ -29,6 +30,7 @@
 
 /* Begin PBXFileReference section */
 		906B8C1F26DB640200C94269 /* ProgressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressViewController.swift; sourceTree = "<group>"; };
+		9070460426EB493200836C9C /* Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		90799D1226D2898F009B327E /* AudioExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioExporter.swift; sourceTree = "<group>"; };
 		907E2CAD26D11309007EBFD1 /* audio-composition-macos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "audio-composition-macos.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		907E2CB026D11309007EBFD1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -97,6 +99,7 @@
 				90E4E6F826E7A1C800CB6443 /* TimeInterval.swift */,
 				90E4E6FB26E7A1F600CB6443 /* NSColor.swift */,
 				90E4E6FE26E7A25600CB6443 /* GridClipTableView.swift */,
+				9070460426EB493200836C9C /* Data.swift */,
 				907E2CB626D1130E007EBFD1 /* Assets.xcassets */,
 				907E2CB826D1130E007EBFD1 /* Main.storyboard */,
 				907E2CBB26D1130E007EBFD1 /* Info.plist */,
@@ -187,6 +190,7 @@
 				907E2CDA26D25159007EBFD1 /* AudioTrack.swift in Sources */,
 				907E2CD226D11732007EBFD1 /* EditorWindowController.swift in Sources */,
 				907E2CDD26D251DD007EBFD1 /* AudioAsset.swift in Sources */,
+				9070460526EB493200836C9C /* Data.swift in Sources */,
 				90799D1326D2898F009B327E /* AudioExporter.swift in Sources */,
 				907E2CB526D11309007EBFD1 /* Document.swift in Sources */,
 				907E2CC526D11449007EBFD1 /* TimelineView.swift in Sources */,
