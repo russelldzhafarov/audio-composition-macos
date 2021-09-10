@@ -20,7 +20,6 @@ class Document: NSDocument {
     
     // Model
     let timeline = Timeline(tracks: [AudioTrack(id: UUID(), name: "Channel # 1", assets: [])],
-                            windowController: nil,
                             undoManager: nil)
     
     override class var preservesVersions: Bool { false }
@@ -36,8 +35,6 @@ class Document: NSDocument {
             
             addWindowController(windowController)
             
-            timeline.fileUrl = fileURL
-            timeline.windowController = windowController
             timeline.undoManager = windowController.window?.undoManager
             
             windowController.contentViewController?.representedObject = timeline
@@ -58,8 +55,6 @@ class Document: NSDocument {
         }
 
         timeline.tracks = try JSONDecoder().decode([AudioTrack].self, from: jsonData)
-        
-        timeline.fileUrl = fileURL
         
         self.documentFileWrapper = fileWrapper
     }
