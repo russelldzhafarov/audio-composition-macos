@@ -32,7 +32,7 @@
 		906B8C1F26DB640200C94269 /* ProgressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressViewController.swift; sourceTree = "<group>"; };
 		9070460426EB493200836C9C /* Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		90799D1226D2898F009B327E /* AudioExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioExporter.swift; sourceTree = "<group>"; };
-		907E2CAD26D11309007EBFD1 /* audio-composition-macos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "audio-composition-macos.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		907E2CAD26D11309007EBFD1 /* Audio Studio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Audio Studio.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		907E2CB026D11309007EBFD1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		907E2CB226D11309007EBFD1 /* EditorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorViewController.swift; sourceTree = "<group>"; };
 		907E2CB426D11309007EBFD1 /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
@@ -75,7 +75,7 @@
 		907E2CAE26D11309007EBFD1 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				907E2CAD26D11309007EBFD1 /* audio-composition-macos.app */,
+				907E2CAD26D11309007EBFD1 /* Audio Studio.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -111,9 +111,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		907E2CAC26D11309007EBFD1 /* audio-composition-macos */ = {
+		907E2CAC26D11309007EBFD1 /* Audio Studio */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 907E2CBF26D1130E007EBFD1 /* Build configuration list for PBXNativeTarget "audio-composition-macos" */;
+			buildConfigurationList = 907E2CBF26D1130E007EBFD1 /* Build configuration list for PBXNativeTarget "Audio Studio" */;
 			buildPhases = (
 				907E2CA926D11309007EBFD1 /* Sources */,
 				907E2CAA26D11309007EBFD1 /* Frameworks */,
@@ -123,9 +123,9 @@
 			);
 			dependencies = (
 			);
-			name = "audio-composition-macos";
+			name = "Audio Studio";
 			productName = "audio-composition-macos";
-			productReference = 907E2CAD26D11309007EBFD1 /* audio-composition-macos.app */;
+			productReference = 907E2CAD26D11309007EBFD1 /* Audio Studio.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -155,7 +155,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				907E2CAC26D11309007EBFD1 /* audio-composition-macos */,
+				907E2CAC26D11309007EBFD1 /* Audio Studio */,
 			);
 		};
 /* End PBXProject section */
@@ -378,7 +378,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		907E2CBF26D1130E007EBFD1 /* Build configuration list for PBXNativeTarget "audio-composition-macos" */ = {
+		907E2CBF26D1130E007EBFD1 /* Build configuration list for PBXNativeTarget "Audio Studio" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				907E2CC026D1130E007EBFD1 /* Debug */,
