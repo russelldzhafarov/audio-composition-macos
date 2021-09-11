@@ -16,14 +16,14 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="audio-composition-macos" systemMenu="apple" id="uQy-DD-JDr">
                                     <items>
-                                        <menuItem title="About audio-composition-macos" id="5kV-Vb-QxS">
+                                        <menuItem title="About Audio Studio" id="5kV-Vb-QxS">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="orderFrontStandardAboutPanel:" target="Ady-hI-5gd" id="Exp-CZ-Vem"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="4je-JR-u6R"/>
-                                        <menuItem title="Hide audio-composition-macos" keyEquivalent="h" id="Olw-nP-bQN">
+                                        <menuItem title="Hide Audio Studio" keyEquivalent="h" id="Olw-nP-bQN">
                                             <connections>
                                                 <action selector="hide:" target="Ady-hI-5gd" id="PnN-Uc-m68"/>
                                             </connections>
@@ -41,7 +41,7 @@
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="kCx-OE-vgT"/>
-                                        <menuItem title="Quit audio-composition-macos" keyEquivalent="q" id="4sb-4s-VLi">
+                                        <menuItem title="Quit Audio Studio" keyEquivalent="q" id="4sb-4s-VLi">
                                             <connections>
                                                 <action selector="terminate:" target="Ady-hI-5gd" id="Te7-pn-YzF"/>
                                             </connections>
@@ -207,7 +207,7 @@
                         <outlet property="delegate" destination="Voe-Tx-rLC" id="PrD-fu-P6m"/>
                     </connections>
                 </application>
-                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="audio_composition_macos" customModuleProvider="target"/>
+                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="Audio_Studio" customModuleProvider="target"/>
                 <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -216,7 +216,7 @@
         <!--Window Controller-->
         <scene sceneID="R2V-B0-nI4">
             <objects>
-                <windowController storyboardIdentifier="Document Window Controller" id="jGA-0Y-lOj" customClass="EditorWindowController" customModule="audio_composition_macos" customModuleProvider="target" sceneMemberID="viewController">
+                <windowController storyboardIdentifier="Document Window Controller" id="jGA-0Y-lOj" customClass="EditorWindowController" customModule="Audio_Studio" customModuleProvider="target" sceneMemberID="viewController">
                     <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="audio-compositor" animationBehavior="default" titlebarAppearsTransparent="YES" id="Ckk-yw-fiv">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
@@ -238,12 +238,12 @@
         <!--Editor View Controller-->
         <scene sceneID="hIz-AP-VOD">
             <objects>
-                <viewController id="5gI-5U-AMq" customClass="EditorViewController" customModule="audio_composition_macos" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="5gI-5U-AMq" customClass="EditorViewController" customModule="Audio_Studio" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="ERx-hH-rdd">
                         <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="Y0Z-9D-NV8" customClass="RulerView" customModule="audio_composition_macos" customModuleProvider="target">
+                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="Y0Z-9D-NV8" customClass="RulerView" customModule="Audio_Studio" customModuleProvider="target">
                                 <rect key="frame" x="161" y="230" width="319" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="KwW-HP-343"/>
@@ -402,7 +402,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="319" height="153"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <view id="Tnk-fQ-UdZ" customClass="TimelineView" customModule="audio_composition_macos" customModuleProvider="target">
+                                        <view id="Tnk-fQ-UdZ" customClass="TimelineView" customModule="Audio_Studio" customModuleProvider="target">
                                             <rect key="frame" x="0.0" y="0.0" width="304" height="138"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                         </view>
@@ -418,7 +418,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>
-                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="Bxv-3M-c41" customClass="OverlayView" customModule="audio_composition_macos" customModuleProvider="target">
+                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="Bxv-3M-c41" customClass="OverlayView" customModule="Audio_Studio" customModuleProvider="target">
                                 <rect key="frame" x="161" y="76" width="319" height="184"/>
                             </customView>
                             <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="60" horizontalPageScroll="10" verticalLineScroll="60" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ide-Hj-WkD">
@@ -427,7 +427,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="160" height="153"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" tableStyle="plain" selectionHighlightStyle="none" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="60" viewBased="YES" id="an1-ZA-W11" customClass="GridClipTableView" customModule="audio_composition_macos" customModuleProvider="target">
+                                        <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" tableStyle="plain" selectionHighlightStyle="none" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="60" viewBased="YES" id="an1-ZA-W11" customClass="GridClipTableView" customModule="Audio_Studio" customModuleProvider="target">
                                             <rect key="frame" x="0.0" y="0.0" width="160" height="153"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -728,7 +728,7 @@
         <!--Progress View Controller-->
         <scene sceneID="DV9-zU-MVi">
             <objects>
-                <viewController storyboardIdentifier="ProgressViewController" id="Vrb-1X-0e7" customClass="ProgressViewController" customModule="audio_composition_macos" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ProgressViewController" id="Vrb-1X-0e7" customClass="ProgressViewController" customModule="Audio_Studio" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="zlS-9y-3yv">
                         <rect key="frame" x="0.0" y="0.0" width="480" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
