@@ -372,7 +372,7 @@ class Timeline: ObservableObject {
                 let asset = AudioAsset(id: UUID(), fileId: fileId, trackId: UUID(), url: url, startTime: startTime, buffer: buffer, samples: samples)
                 
                 let aTrack = AudioTrack(id: UUID(),
-                                        name: "Channel # \(strongSelf.tracks.count + 1)",
+                                        name: url.deletingPathExtension().lastPathComponent,
                                         assets: [asset])
                 // Mute track if solo enabled in another channel
                 aTrack.isMuted = !strongSelf.tracks.filter{ $0.soloEnabled }.isEmpty
