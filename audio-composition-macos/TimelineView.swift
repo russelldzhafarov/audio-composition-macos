@@ -114,9 +114,15 @@ class TimelineView: NSView {
         guard let timeline = document?.timeline,
               !timeline.isEmpty else { return }
         
-        // Clear selection
+        // Clear selection and collect snap times
+        var stops: [TimeInterval] = []
         for track in timeline.tracks {
-            track.assets.forEach{ $0.isSelected = false }
+            for asset in track.assets {
+                asset.isSelected = false
+                
+                stops.append(asset.startTime)
+                stops.append(asset.startTime + asset.duration)
+            }
         }
         timeline.needsDisplay = true
         
@@ -148,11 +154,11 @@ class TimelineView: NSView {
         }
         
         if let selected = selected {
-            move(asset: selected, with: event)
+            move(asset: selected, stops: stops, with: event)
         }
     }
     
-    func move(asset: AudioAsset, with event: NSEvent) {
+    func move(asset: AudioAsset, stops: [TimeInterval], with event: NSEvent) {
         guard let timeline = document?.timeline,
               !timeline.isEmpty else { return }
         
@@ -162,6 +168,8 @@ class TimelineView: NSView {
         
         dragId = asset.id
         dragLoc = start
+        
+        let snapOffset = timeline.visibleDur / 50.0
         
         while true {
             guard let nextEvent = window?.nextEvent(matching: [.leftMouseUp, .leftMouseDragged]) else { continue }
@@ -175,6 +183,12 @@ class TimelineView: NSView {
                 
                 asset.startTime = TimeInterval(max(TimeInterval.zero,
                                                    (assetStartTime + change)))
+                
+                for stop in stops {
+                    if ((stop - snapOffset) ... (stop + snapOffset)).contains(asset.startTime) {
+                        asset.startTime = stop
+                    }
+                }
                 
                 timeline.needsDisplay = true
             }
