@@ -131,6 +131,9 @@
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Delete" id="pa3-QI-u2k">
+                                            <string key="keyEquivalent" base64-UTF8="YES">
+CA
+</string>
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="delete:" target="Ady-hI-5gd" id="0Mk-Ml-PaM"/>
@@ -261,7 +264,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="CgW-je-7v1">
-                                        <rect key="frame" x="150" y="15.5" width="16" height="20"/>
+                                        <rect key="frame" x="164" y="15.5" width="16" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="16" id="5PL-sq-wT2"/>
                                             <constraint firstAttribute="width" constant="16" id="txb-ak-fsi"/>
@@ -276,10 +279,10 @@
                                         </connections>
                                     </button>
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="cK6-67-dcI">
-                                        <rect key="frame" x="116" y="15.5" width="18" height="19"/>
+                                        <rect key="frame" x="126" y="12.5" width="22" height="25"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="16" id="mQs-UC-uLF"/>
-                                            <constraint firstAttribute="width" constant="18" id="n8J-az-frf"/>
+                                            <constraint firstAttribute="height" constant="22" id="mQs-UC-uLF"/>
+                                            <constraint firstAttribute="width" constant="22" id="n8J-az-frf"/>
                                         </constraints>
                                         <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="forward.fill" catalog="system" imagePosition="only" alignment="center" imageScaling="proportionallyUpOrDown" inset="2" id="e0m-dy-YZ8">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -306,10 +309,10 @@
                                         </connections>
                                     </button>
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="rLs-nv-kyA">
-                                        <rect key="frame" x="52" y="15.5" width="18" height="19"/>
+                                        <rect key="frame" x="52" y="12.5" width="22" height="25"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="18" id="3eG-tS-Kpe"/>
-                                            <constraint firstAttribute="height" constant="16" id="WNi-Au-di6"/>
+                                            <constraint firstAttribute="width" constant="22" id="3eG-tS-Kpe"/>
+                                            <constraint firstAttribute="height" constant="22" id="WNi-Au-di6"/>
                                         </constraints>
                                         <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="backward.fill" catalog="system" imagePosition="only" alignment="center" imageScaling="proportionallyUpOrDown" inset="2" id="GtQ-kT-f3l">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -321,10 +324,10 @@
                                         </connections>
                                     </button>
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="HyL-e9-3Ed">
-                                        <rect key="frame" x="86" y="15" width="14.5" height="20"/>
+                                        <rect key="frame" x="90" y="13" width="20.5" height="24"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="16" id="47N-0V-xrF"/>
-                                            <constraint firstAttribute="width" constant="14" id="VSo-eW-3XU"/>
+                                            <constraint firstAttribute="height" constant="20" id="47N-0V-xrF"/>
+                                            <constraint firstAttribute="width" constant="20" id="VSo-eW-3XU"/>
                                         </constraints>
                                         <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="play.fill" catalog="system" imagePosition="only" alignment="center" imageScaling="proportionallyUpOrDown" inset="2" id="DQk-UV-RzQ">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
