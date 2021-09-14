@@ -236,8 +236,6 @@ class Timeline: ObservableObject {
     
     func track(at point: NSPoint) -> AudioTrack? {
         var idx = Int(floor(point.y / trackHeight))
-        if idx < 0 { idx = 0 }
-        if idx > (tracks.count - 1) { idx = tracks.count - 1 }
         guard tracks.indices.contains(idx) else { return nil }
         return tracks[idx]
     }
